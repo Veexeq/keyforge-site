@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- ENUMS ---
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+// --- MODELS ---
+
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  role          Role      @default(CLIENT)
+  createdAt     DateTime  @default(now())
+  
+  orders        Order[]
+  addresses     SavedAddress[]
+  reviews       Review[]
+}
+
+model SavedAddress {
+  id          Int     @id @default(autoincrement())
+  userId      Int
+  country     String  @default("Poland")
+  city        String
+  street      String
+  postalCode  String
+  houseNumber String
+  isDefault   Boolean @default(false)
+
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  id            Int       @id @default(autoincrement())
+  name          String
+  parentId      Int?      // Dla podkategorii (opcjonalne)
+  
+  parent        Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children      Category[] @relation("CategoryHierarchy")
+  products      Product[]
+}
+
+model Product {
+  id            Int       @id @default(autoincrement())
+  categoryId    Int
+  name          String
+  description   String
+  basePrice     Decimal   @db.Decimal(10, 2)
+  isDeleted     Boolean   @default(false)
+  boughtCount   Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  category      Category  @relation(fields: [categoryId], references: [id])
+  variants      ProductVariant[]
+  images        Image[]
+  reviews       Review[]
+}
+
+model ProductVariant {
+  id            Int       @id @default(autoincrement())
+  productId     Int
+  name          String    // np. "Red Switch", "Size XL"
+  priceModifier Decimal   @default(0.00) @db.Decimal(10, 2)
+  stockQuantity Int       
+  
+  product       Product   @relation(fields: [productId], references: [id])
+  orderItems    OrderItem[]
+}
+
+model Image {
+  id            Int     @id @default(autoincrement())
+  productId     Int
+  url           String
+  altText       String
+  displayOrder  Int     @default(0) // 0 = Główne zdjęcie
+
+  product       Product @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  userId          Int?        // Nullable dla gości (opcjonalnie)
+  guestEmail      String?
+  orderDate       DateTime    @default(now())
+  status          OrderStatus @default(PENDING)
+  totalAmount     Decimal     @db.Decimal(10, 2)
+  
+  // Snapshot adresu wysyłki (dane w momencie zakupu)
+  country         String
+  city            String
+  street          String
+  postalCode      String
+  houseNumber     String
+
+  user            User?       @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id              Int     @id @default(autoincrement())
+  orderId         Int
+  variantId       Int     // Kupujemy konkretny wariant
+  quantity        Int
+  unitPrice       Decimal @db.Decimal(10, 2) // Cena w momencie zakupu (zamrożona)
+
+  order           Order          @relation(fields: [orderId], references: [id])
+  variant         ProductVariant @relation(fields: [variantId], references: [id])
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  userId      Int
+  score       Int      // 1-5
+  title       String?
+  description String?
+  createdAt   DateTime @default(now())
+
+  product     Product  @relation(fields: [productId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  // Zabezpieczenie: Jeden user = jedna opinia o produkcie
+  @@unique([userId, productId])
+}
