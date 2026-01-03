@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",         // Kod źródłowy będzie w folderze src
+    "outDir": "./dist",         // Skompilowany JS trafi do folderu dist
+    "module": "commonjs",       // Standard modułów dla Node.js
+    "target": "es2020",         // Wersja JS (bezpieczna dla Node 18+)
+    "strict": true,             // Włączamy tryb rygorystyczny (maksimum bezpieczeństwa typów)
+    "esModuleInterop": true,    // Pozwala na importowanie bibliotek CommonJS jako 'import ...'
+    "skipLibCheck": true,       // Przyspiesza kompilację, pomijając sprawdzanie wnętrza bibliotek
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"]
+}
