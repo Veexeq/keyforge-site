@@ -17,10 +17,10 @@ export default function CategoriesGrid() {
       </div>
 
       {/* BENTO GRID */}
-      <div className="grid h-full w-full gap-6 md:h-[600px] md:grid-cols-2">
+      <div className="grid w-full gap-6 md:h-[600px] md:grid-cols-2">
         
         {/* --- LEFT COLUMN: ARTISAN KEYCAPS (Flagship) --- */}
-        <div className="group relative overflow-hidden rounded-3xl border border-border/50 bg-card">
+        <div className="group relative min-h-[400px] overflow-hidden rounded-3xl border border-border/50 bg-card">
           {/* Background Image */}
           <div className="absolute inset-0">
             <img 
@@ -38,7 +38,7 @@ export default function CategoriesGrid() {
               Flagship Collection
             </span>
             <h3 className="mb-2 text-3xl font-bold text-white">Artisan Keycaps</h3>
-            <p className="mb-6 max-w-sm text-sm text-gray-300">
+            <p className="mb-6 max-w-sm text-sm text-white/70">
               Hand-sculpted, resin-cast gems for your keyboard. 
               Each keycap is a unique piece of art.
             </p>
@@ -52,7 +52,7 @@ export default function CategoriesGrid() {
         <div className="flex flex-col gap-6">
           
           {/* TOP: SWITCHES (Resell/Local Stock) */}
-          <div className="group relative flex-1 overflow-hidden rounded-3xl border border-border/50 bg-card">
+          <div className="group relative min-h-[250px] flex-1 overflow-hidden rounded-3xl border border-border/50 bg-card">
             <div className="absolute inset-0">
                <img 
                 src="https://placehold.co/800x600/222/FFF?text=Mechanical+Switches" 
@@ -64,7 +64,7 @@ export default function CategoriesGrid() {
             
             <div className="absolute inset-0 flex flex-col justify-center p-8">
               <h3 className="text-2xl font-bold text-white">Switches</h3>
-              <p className="mb-4 text-sm text-gray-200">
+              <p className="mb-6 max-w-sm text-sm text-white/70">
                 Linear, Tactile, or Clicky? Local stock, 24h shipping.
               </p>
               <div className="flex items-center gap-2 text-sm font-medium text-white group-hover:underline">
@@ -74,7 +74,7 @@ export default function CategoriesGrid() {
           </div>
 
           {/* BOTTOM: WRIST RESTS (Handmade) */}
-          <div className="group relative flex-1 overflow-hidden rounded-3xl border border-border/50 bg-card">
+          <div className="group relative min-h-[250px] flex-1 overflow-hidden rounded-3xl border border-border/50 bg-card">
              <div className="absolute inset-0">
                <img 
                 src="https://placehold.co/800x600/2a1a2a/FFF?text=Wrist+Rests" 
@@ -86,7 +86,7 @@ export default function CategoriesGrid() {
 
             <div className="absolute inset-0 flex flex-col justify-center p-8">
               <h3 className="text-2xl font-bold text-white">Wrist Rests</h3>
-              <p className="mb-4 text-sm text-gray-200">
+              <p className="mb-4 text-sm text-white/80">
                 Ergonomic support meeting resin art.
               </p>
               <div className="flex items-center gap-2 text-sm font-medium text-white group-hover:underline">

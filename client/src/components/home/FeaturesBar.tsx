@@ -20,7 +20,7 @@ const features = [
 
 export default function FeaturesBar() {
   return (
-    <section className="border-y border-border/50 bg-secondary/20 backdrop-blur-sm">
+    <section className="border-border/50 bg-secondary/20 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-8 py-8 sm:grid-cols-3 sm:gap-4">
           {features.map((feature, index) => (

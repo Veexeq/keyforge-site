@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Menu, Moon, ShoppingBag, Sun, User } from "lucide-react";
-import { useTheme } from "@/components/Theme-provider"; 
+import { useTheme } from "@/components/ThemeProvider"; 
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -10,11 +10,12 @@ export default function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         
         {/* Logo */}
-        <div className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          {/* Insert keycap logo here */}
           <span className="text-xl font-bold tracking-tighter text-foreground">
             KeyForge
           </span>
-        </div>
+        </a>
 
         {/* Navigation */}
         <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
