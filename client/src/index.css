@@ -1,19 +1,13 @@
 @import "tailwindcss";
 
-/* 1. Konfiguracja Dark Mode dla Tailwind v4 */
-/* Mówi: "jeśli gdzieś wyżej jest klasa .dark, włącz tryb ciemny" */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Promienie zaokrągleń (Radius) */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-
-  /* Mapowanie zmiennych (łączenie CSS z klasami Tailwinda) */
+  
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -29,105 +23,86 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 }
 
-/* 2. DEFINICJA KOLORÓW */
-
-/* --- LIGHT MODE (Jasny) --- */
-/* Baza: Slate (Szarości) | Akcent: Violet (Fiolet) */
+/* --- LIGHT MODE --- */
 :root {
   --radius: 0.5rem;
 
-  /* Tło: Białe */
   --background: oklch(1 0 0);
-  /* Tekst: Slate-950 (Bardzo ciemny grafit) */
-  --foreground: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.12 0.01 280); /* Głęboki granat zamiast czerni */
 
-  /* Karty/Modale: Białe */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.12 0.01 280);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
+  --popover-foreground: oklch(0.12 0.01 280);
 
-  /* PRIMARY: Violet-600 (Główny kolor marki) */
-  --primary: oklch(0.558 0.288 291.135);
-  --primary-foreground: oklch(1 0 0); /* Biały tekst na fiolecie */
-
-  /* SECONDARY: Slate-100 (Tła drugorzędne) */
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.558 0.288 291.135); /* Fioletowy tekst */
-
-  /* MUTED: Slate-100 (Tła wygaszone) */
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417); /* Szary tekst */
-
-  /* ACCENT: Slate-100 (Np. hover w menu) */
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.558 0.288 291.135);
-
-  /* DESTRUCTIVE: Red-500 (Błędy/Usuwanie) */
-  --destructive: oklch(0.637 0.237 25.331);
-  --destructive-foreground: oklch(1 0 0);
-
-  /* Ramki: Slate-200 */
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  
-  /* Ring (Outline): Violet-600 */
-  --ring: oklch(0.558 0.288 291.135);
-}
-
-/* --- DARK MODE (Ciemny) --- */
-/* Baza: Slate-950 (Ciemny Granat) | Akcent: Violet-500 */
-.dark {
-  /* Tło: Slate-950 (To jest klucz do "Premium look", nie czysta czerń) */
-  --background: oklch(0.129 0.042 264.695);
-  /* Tekst: Slate-50 (Prawie biały) */
-  --foreground: oklch(0.984 0.003 247.858);
-
-  /* Karty: Slate-950 (Spójne z tłem) */
-  --card: oklch(0.129 0.042 264.695);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.129 0.042 264.695);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-
-  /* PRIMARY: Violet-500 (Jaśniejszy fiolet, żeby świecił na ciemnym) */
-  --primary: oklch(0.627 0.265 303.9);
+  /* PRIMARY: Deep Violet (Klasyczny, elegancki fiolet) */
+  --primary: oklch(0.55 0.22 280); 
   --primary-foreground: oklch(1 0 0);
 
-  /* SECONDARY: Slate-800 */
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
+  /* SECONDARY: Bardzo jasny lawendowy szary */
+  --secondary: oklch(0.96 0.01 280);
+  --secondary-foreground: oklch(0.55 0.22 280);
 
-  /* MUTED: Slate-800 */
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
+  --muted: oklch(0.96 0.01 280);
+  --muted-foreground: oklch(0.55 0.05 280);
 
-  /* ACCENT: Slate-800 */
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
+  --accent: oklch(0.96 0.01 280);
+  --accent-foreground: oklch(0.55 0.22 280);
 
-  /* DESTRUCTIVE: Red-900 */
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.6 0.18 25);
+  --destructive-foreground: oklch(1 0 0);
 
-  /* Ramki: Slate-800 (Ciemne, subtelne) */
-  --border: oklch(0.279 0.041 260.031);
-  --input: oklch(0.279 0.041 260.031);
-  
-  /* Ring: Violet-500 */
-  --ring: oklch(0.627 0.265 303.9);
+  --border: oklch(0.92 0.01 280);
+  --input: oklch(0.92 0.01 280);
+  --ring: oklch(0.55 0.22 280);
 }
 
-/* 3. STYLE BAZOWE */
+/* --- DARK MODE (Elegant Neon) --- */
+.dark {
+  /* Tło: Bardzo ciemny fiolet/czarny (Obsidian) */
+  --background: oklch(0.10 0.02 280); 
+  --foreground: oklch(0.98 0.01 290);
+
+  /* Karty: Minimalnie jaśniejsze */
+  --card: oklch(0.13 0.02 280);
+  --card-foreground: oklch(0.98 0.01 290);
+  --popover: oklch(0.13 0.02 280);
+  --popover-foreground: oklch(0.98 0.01 290);
+
+  /* PRIMARY: Jasny, neonowy fiolet (Electric) */
+  --primary: oklch(0.65 0.25 280); 
+  --primary-foreground: oklch(1 0 0); 
+
+  --secondary: oklch(0.18 0.03 280);
+  --secondary-foreground: oklch(0.98 0.01 290);
+
+  --muted: oklch(0.18 0.03 280);
+  --muted-foreground: oklch(0.70 0.04 280);
+
+  --accent: oklch(0.18 0.03 280);
+  --accent-foreground: oklch(0.98 0.01 290);
+
+  --destructive: oklch(0.5 0.2 25);
+  --destructive-foreground: oklch(1 0 0);
+
+  /* Ramki: Ciemne, fioletowawe (nie szare) */
+  --border: oklch(0.20 0.04 280);
+  --input: oklch(0.20 0.04 280);
+  
+  --ring: oklch(0.65 0.25 280);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased; /* Dodano antialiased dla lepszej czcionki */
   }
 }

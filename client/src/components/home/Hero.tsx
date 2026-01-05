@@ -1,27 +1,34 @@
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
+import AmbientGlow from "@/components/shared/AmbientGlow";
 
 export default function Hero() {
   return (
-    <section className="container mx-auto flex flex-col items-center pt-20 pb-32 text-center px-4">
-
+    <section className="container mx-auto flex flex-col items-center px-4 py-24 text-center">
+      
       {/* Badge */}
-      <span className="mb-4 rounded-full bg-muted px-4 py-1.5 text-sm font-medium text-foreground">
-        New Collection  
-      </span>      
+      <span className="mb-6 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-medium text-primary">
+        New Collection
+      </span>
 
-      <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl mb-6 text-balance">
+      <h1 className="text-balance mb-6 text-5xl font-extrabold tracking-tight text-foreground sm:text-7xl">
         Make your keyboard <br className="hidden sm:block" />
-        unique.
+        <span className="text-primary">unique.</span>
       </h1>
 
-      <p className="max-w-[600px] text-lg text-muted-foreground mb-8 text-balance">
-        Discover artisan keycaps and accessories, made by keyboard enthusiasts, <br className="hidden sm:block" />
+      <p className="text-balance text-muted-foreground mb-10 max-w-[600px] text-lg leading-relaxed">
+        Discover artisan keycaps and accessories, made by keyboard enthusiasts,{" "}
+        <br className="hidden sm:block" />
         buy switches at reasonable price.
       </p>
 
       {/* CTA buttons */}
-      <div className="flex gap-4 mb-16">
-        <Button size="lg" className="rounded-full px-8">
+      <div className="mb-20 flex gap-4">
+
+        {/* Glow button: Shadow matching primary color */}
+        <Button 
+          size="lg" 
+          className="rounded-full px-8 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-primary/50"
+        >
           Buy now
         </Button>
         <Button size="lg" variant="outline" className="rounded-full px-8">
@@ -30,17 +37,21 @@ export default function Hero() {
       </div>
 
       {/* Photo wrapper */}
-      <div className="relative w-full max-w-4xl mt-10">
-
-        {/* TODO: Background Blob */}
-        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary to-secondary opacity-30 blur-2xl transition duration-1000 group-hover:opacity-100 group-hover:duration-200" />
+      <div className="group relative mt-4 w-full max-w-5xl">
+        
+        <AmbientGlow className="-inset-4 sm:-inset-8" />
         
         {/* Main photo */}
-        <img 
-          src="https://placehold.co/1200x800/png?text=KeyForge+Keyboard+Setup"
+        <img
+          src="https://placehold.co/1200x800/png?text=KeyForge+Setup"
           alt="KeyForge Keyboard Setup"
-          className="relative z-10 w-full rounded-2xl shadow-2xl border border-border/5 dark:border-white/10"
+          className="relative rounded-xl border border-border/50 bg-card shadow-2xl shadow-black/50"
         />
+        
+        {/* Caption */}
+        <div className="absolute -bottom-8 left-0 w-full text-center text-xs italic text-muted-foreground opacity-0 transition-opacity duration-500 sm:opacity-60 group-hover:opacity-100">
+          Setup by @KeyForge
+        </div>
       </div>
     </section>
   );
