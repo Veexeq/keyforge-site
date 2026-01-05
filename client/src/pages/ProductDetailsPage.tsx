@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { products } from "@/mock_data/products";
+import { products } from "@/mock_data/products"; // Upewnij się, że ścieżka jest poprawna
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,6 @@ export default function ProductDetailsPage() {
     );
   }
 
-  // TODO: Implement actual related products feature
   const relatedProducts = products
     .filter((p) => p.id !== productId)
     .slice(0, 4);
@@ -54,13 +53,12 @@ export default function ProductDetailsPage() {
         </div>
 
         {/* --- PRODUCT GRID --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 mb-24 items-start">
           
           {/* LEFT COLUMN: PHOTO */}
-          <div className="relative group">
+          <div className="relative group z-0 w-full">
 
-            {/* FIXME: no glow */}
-            <AmbientGlow className="-inset-8 sm:-inset-12 opacity-30 dark:opacity-50 blur-3xl scale-110" />
+            <AmbientGlow className="-inset-4 sm:-inset-8 opacity-30 dark:opacity-40 blur-2xl" />
             
             <div className="relative aspect-square overflow-hidden rounded-3xl border border-border/50 bg-secondary/10 shadow-2xl">
               <img
@@ -78,7 +76,7 @@ export default function ProductDetailsPage() {
 
           {/* RIGHT COLUMN: DETAILS */}
           <div className="flex flex-col justify-center">
-            <div className="mb-2 text-sm font-medium text-primary">
+            <div className="mb-2 text-sm font-medium text-primary uppercase tracking-wider">
               {product.category}
             </div>
             
@@ -86,7 +84,7 @@ export default function ProductDetailsPage() {
               {product.name}
             </h1>
             
-            <div className="text-3xl font-semibold mb-6">
+            <div className="text-3xl font-semibold mb-6 text-foreground">
               {product.price.toFixed(2)} PLN
             </div>
 
@@ -98,8 +96,14 @@ export default function ProductDetailsPage() {
 
             {/* Actions */}
             <div className="flex flex-col gap-4 sm:flex-row mb-8">
-              <Button size="lg" className="flex-1 rounded-full text-base h-12 shadow-lg shadow-primary/20">
-                {/* FIXME: too small on mobile, fine on desktop */}
+              <Button 
+                size="lg" 
+                className="
+                  rounded-full shadow-lg shadow-primary/20
+                  w-full h-14 text-lg font-semibold
+                  md:flex-1 md:h-12 md:text-base md:w-auto
+                "
+              >
                 <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
               </Button>
             </div>
