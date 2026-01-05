@@ -54,7 +54,7 @@ export default function Navbar() {
           <Button variant="ghost" size="icon" className="relative h-9 w-9">
             <ShoppingBag className="h-5 w-5" />
             {/* Notification dot */}
-            <span className="bg-primary absolute top-1.5 right-1.5 h-2 w-2 rounded-full" />
+            <span className="bg-destructive absolute top-1.5 right-1.5 h-2 w-2 rounded-full" />
             <span className="sr-only">Cart</span>
           </Button>
 
