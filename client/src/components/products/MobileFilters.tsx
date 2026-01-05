@@ -27,15 +27,16 @@ export default function MobileFilters(props: MobileFiltersProps) {
         </Button>
       </SheetTrigger>
       
-      <SheetContent side="left" className="flex flex-col h-full w-[300px] sm:w-[400px]">
-        <SheetHeader className="text-left">
+      <SheetContent side="left" className="flex flex-col h-full w-[300px] sm:w-[400px] gap-0">
+        
+        <SheetHeader className="text-left p-6 pb-2">
           <SheetTitle>Filters</SheetTitle>
           <SheetDescription>
             Narrow down your search results.
           </SheetDescription>
         </SheetHeader>
         
-        <div className="flex-1 overflow-y-auto py-6 pr-2">
+        <div className="flex-1 overflow-y-auto px-6 pb-6 pt-6">
           <ProductFilters {...props} />
         </div>
       </SheetContent>
