@@ -1,7 +1,7 @@
 export interface Product {
   id: number;
   name: string;
-  category: "Artisan Keycap" | "Wrist Rest" | "Switch" | "Deskmat";
+  category: "Artisan Keycap" | "Wrist Rest" | "Switch";
   price: number;
   image: string;
   isNew?: boolean;
@@ -52,13 +52,6 @@ export const products: Product[] = [
     category: "Wrist Rest",
     price: 249.00,
     image: "https://placehold.co/600x600/0f2e15/FFF?text=Forest+Rest",
-  },
-  {
-    id: 7,
-    name: "Cyber Grid",
-    category: "Deskmat",
-    price: 119.00,
-    image: "https://placehold.co/600x600/000044/FFF?text=Cyber+Mat",
   },
   {
     id: 8,

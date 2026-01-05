@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Search, X } from "lucide-react";
 
-const CATEGORIES = ["Artisan Keycap", "Wrist Rest", "Switch", "Deskmat"];
+const CATEGORIES = ["Artisan Keycap", "Wrist Rest", "Switch"];
 
 interface ProductFiltersProps {
   searchQuery: string;
