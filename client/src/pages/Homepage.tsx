@@ -1,3 +1,4 @@
+import CategoriesGrid from "@/components/home/CategoriesGrid";
 import FeaturesBar from "@/components/home/FeaturesBar";
 import Hero from "@/components/home/Hero";
 import Navbar from "@/components/shared/Navbar";
@@ -9,6 +10,7 @@ export default function Homepage() {
       <main>
         <Hero />
         <FeaturesBar />
+        <CategoriesGrid />
       </main>
     </div>
   );
