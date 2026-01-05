@@ -32,8 +32,9 @@ export default function Hero() {
       {/* Photo wrapper */}
       <div className="relative w-full max-w-4xl mt-10">
 
-        {/* Background Blob */}
-
+        {/* TODO: Background Blob */}
+        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary to-secondary opacity-30 blur-2xl transition duration-1000 group-hover:opacity-100 group-hover:duration-200" />
+        
         {/* Main photo */}
         <img 
           src="https://placehold.co/1200x800/png?text=KeyForge+Keyboard+Setup"
