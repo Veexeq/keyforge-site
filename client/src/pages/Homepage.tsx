@@ -3,6 +3,7 @@ import FeaturedCollection from "@/components/home/FeaturedCollection";
 import FeaturesBar from "@/components/home/FeaturesBar";
 import Hero from "@/components/home/Hero";
 import Newsletter from "@/components/home/Newsletter";
+import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
 
 export default function Homepage() {
@@ -16,6 +17,7 @@ export default function Homepage() {
         <FeaturedCollection />
         <Newsletter />
       </main>
+      <Footer />
     </div>
   );
 }
