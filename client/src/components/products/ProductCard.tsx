@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import type { Product } from "@/mock_data/products";
+import { Link } from "react-router-dom"; 
 
 interface ProductCardProps {
   product: Product;
@@ -10,8 +11,9 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card transition-all hover:shadow-lg hover:border-primary/20">
-      {/* Image Area */}
-      <div className="aspect-square relative overflow-hidden bg-secondary/20">
+      
+      {/* Image Area - link the whole picture */}
+      <Link to={`/products/${product.id}`} className="aspect-square relative overflow-hidden bg-secondary/20 block">
         <img
           src={product.image}
           alt={product.name}
@@ -22,10 +24,19 @@ export default function ProductCard({ product }: ProductCardProps) {
         {product.isNew && (
           <Badge className="absolute top-3 left-3 shadow-lg">New</Badge>
         )}
+      </Link>
 
-        {/* Quick Add Button */}
-        <div className="absolute bottom-3 right-3 translate-y-full opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <Button size="icon" className="h-9 w-9 rounded-full shadow-lg">
+      {/* Quick Add Button - stays on top */}
+      <div className="absolute top-[calc(100%-12px)] right-3 -translate-y-full pointer-events-none">
+        <div className="translate-y-12 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 pointer-events-auto">
+             <Button 
+                size="icon" 
+                className="h-9 w-9 rounded-full shadow-lg"
+                onClick={(e) => {
+                    e.preventDefault();
+                    console.log("Add to cart", product.id)
+                }}
+             >
             <ShoppingCart className="h-4 w-4" />
           </Button>
         </div>
@@ -35,9 +46,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="flex flex-1 flex-col p-4">
         <div className="flex-1">
           <p className="text-xs text-muted-foreground mb-1">{product.category}</p>
-          <h3 className="font-medium text-foreground leading-tight group-hover:text-primary transition-colors cursor-pointer">
-            {product.name}
-          </h3>
+          {/* LINK TITLE */}
+          <Link to={`/products/${product.id}`}>
+            <h3 className="font-medium text-foreground leading-tight group-hover:text-primary transition-colors cursor-pointer">
+              {product.name}
+            </h3>
+          </Link>
         </div>
         <div className="mt-3 flex items-center justify-between">
           <span className="font-semibold text-foreground">
