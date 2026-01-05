@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Menu, Moon, ShoppingBag, Sun, User } from "lucide-react";
-import { useTheme } from "@/components/theme-provider"; 
+import { useTheme } from "@/components/Theme-provider"; 
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();

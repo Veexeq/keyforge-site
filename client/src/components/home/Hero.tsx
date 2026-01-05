@@ -27,7 +27,7 @@ export default function Hero() {
         {/* Glow button: Shadow matching primary color */}
         <Button 
           size="lg" 
-          className="rounded-full px-8 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-primary/50"
+          className="rounded-full px-8 shadow-lg transition-all duration-300 hover:shadow-primary/25"
         >
           Buy now
         </Button>
