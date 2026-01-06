@@ -49,7 +49,7 @@ const Icons = {
 export default function Footer() {
   return (
     <footer className="border-t border-border/40 bg-background pt-16 pb-8">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-8 md:px-4">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:gap-12">
           
           {/* Column 1: Brand */}
