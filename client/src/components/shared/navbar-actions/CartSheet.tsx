@@ -22,8 +22,8 @@ export default function CartSheet() {
           <ShoppingBag className="h-5 w-5" />
           {itemCount > 0 && (
             <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
             </span>
           )}
           <span className="sr-only">Open cart</span>
@@ -31,7 +31,7 @@ export default function CartSheet() {
       </SheetTrigger>
       
       <SheetContent className="flex w-full flex-col sm:max-w-md">
-        <SheetHeader>
+        <SheetHeader className="px-6 pt-6 text-left">
           <SheetTitle>Shopping Cart ({itemCount})</SheetTitle>
           <SheetDescription>
             Free shipping on orders over 300 PLN.
@@ -39,7 +39,7 @@ export default function CartSheet() {
         </SheetHeader>
 
         {/* CART ITEMS AREA */}
-        <div className="flex-1 overflow-y-auto py-6">
+        <div className="flex-1 overflow-y-auto px-6 py-6">
           {itemCount > 0 ? (
             <div className="flex flex-col gap-4">
               {/* MOCK ITEM */}
@@ -81,8 +81,8 @@ export default function CartSheet() {
 
         {/* FOOTER / CHECKOUT */}
         {itemCount > 0 && (
-          <div className="space-y-4 pt-6">
-            <Separator />
+          <div className="px-6 pb-6 pt-2">
+            <Separator className="mb-4" />
             <div className="flex items-center justify-between text-base font-medium">
               <span>Total</span>
               <span>149.00 PLN</span>

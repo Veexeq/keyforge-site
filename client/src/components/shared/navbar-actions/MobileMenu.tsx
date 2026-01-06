@@ -22,8 +22,8 @@ export default function MobileMenu() {
         </Button>
       </SheetTrigger>
       
-      <SheetContent side="left" className="flex flex-col">
-        <SheetHeader className="text-left mb-6">
+      <SheetContent side="left" className="flex flex-col p-0 gap-0 w-[300px]">
+        <SheetHeader className="text-left px-6 pt-6 pb-4">
           <SheetTitle>
             <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
               KeyForge
@@ -31,7 +31,7 @@ export default function MobileMenu() {
           </SheetTitle>
         </SheetHeader>
         
-        <div className="flex flex-col gap-4 flex-1">
+        <div className="flex flex-col gap-6 flex-1 overflow-y-auto px-6 py-4">
           <Link 
             to="/" 
             className="text-lg font-medium hover:text-primary transition-colors"
@@ -59,7 +59,7 @@ export default function MobileMenu() {
         </div>
 
         {/* Theme Toggle */}
-        <div className="border-t border-border/40 pt-6">
+        <div className="border-t border-border/40 p-6">
            <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Theme</span>
               <Button
