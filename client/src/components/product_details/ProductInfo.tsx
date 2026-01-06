@@ -78,6 +78,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </div>
 
         {/* 2. ADD TO CART BUTTON */}
+        {/* FIXME: This button is too short in height on mobile */}
         <Button
           size="lg"
           onClick={handleAddToCart}
