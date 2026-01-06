@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Icons = {
   Instagram: (props: React.SVGProps<SVGSVGElement>) => (
     <svg
@@ -54,9 +56,9 @@ export default function Footer() {
           
           {/* Column 1: Brand */}
           <div className="col-span-2 md:col-span-1">
-            <span className="text-xl font-bold tracking-tighter text-foreground">
+            <Link to="/" className="text-xl font-bold tracking-tighter text-foreground">
               KeyForge
-            </span>
+            </Link>
             <p className="mt-4 text-sm text-muted-foreground">
               Crafting unique typing experiences. <br />
               Artisan keycaps, premium switches, and ergonomic accessories designed in Poland.
@@ -68,16 +70,16 @@ export default function Footer() {
             <h3 className="mb-4 text-sm font-semibold text-foreground">Shop</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-primary transition-colors">All Products</a>
+                <Link to="/products" className="hover:text-primary transition-colors">All Products</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">Artisan Keycaps</a>
+                <Link to="/products" className="hover:text-primary transition-colors">Artisan Keycaps</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">Switches</a>
+                <Link to="/products" className="hover:text-primary transition-colors">Switches</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">Wrist Rests</a>
+                <Link to="/products" className="hover:text-primary transition-colors">Wrist Rests</Link>
               </li>
             </ul>
           </div>
@@ -87,16 +89,16 @@ export default function Footer() {
             <h3 className="mb-4 text-sm font-semibold text-foreground">Support</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-primary transition-colors">Contact Us</a>
+                <Link to="#" className="hover:text-primary transition-colors">Contact Us</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">Shipping & Returns</a>
+                <Link to="#" className="hover:text-primary transition-colors">Shipping & Returns</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">FAQ</a>
+                <Link to="#" className="hover:text-primary transition-colors">FAQ</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+                <Link to="#" className="hover:text-primary transition-colors">Terms of Service</Link>
               </li>
             </ul>
           </div>
@@ -105,15 +107,15 @@ export default function Footer() {
           <div>
             <h3 className="mb-4 text-sm font-semibold text-foreground">Follow Us</h3>
             <div className="flex gap-4">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Icons.Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Icons.X className="h-5 w-5" />
-                <span className="sr-only">X</span>
+                <span className="sr-only">X (Twitter)</span>
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Icons.Facebook className="h-5 w-5" />
                 <span className="sr-only">Facebook</span>
               </a>
@@ -125,8 +127,8 @@ export default function Footer() {
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border/40 pt-8 sm:flex-row text-xs text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} KeyForge. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Cookie Policy</a>
+            <Link to="#" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+            <Link to="#" className="hover:text-foreground transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>
