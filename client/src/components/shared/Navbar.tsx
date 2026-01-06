@@ -5,13 +5,16 @@ import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" onClick={handleScrollToTop}>
         {/* TODO: put keycap logo here */}
           <span className="text-xl font-bold tracking-tighter text-foreground">
             KeyForge

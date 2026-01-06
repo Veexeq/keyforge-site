@@ -49,6 +49,10 @@ const Icons = {
 };
 
 export default function Footer() {
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <footer className="border-t border-border/40 bg-background pt-16 pb-8">
       <div className="container mx-auto px-8 md:px-4">
@@ -56,7 +60,7 @@ export default function Footer() {
           
           {/* Column 1: Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="text-xl font-bold tracking-tighter text-foreground">
+            <Link to="/" className="text-xl font-bold tracking-tighter text-foreground" onClick={handleScrollToTop}>
               KeyForge
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
