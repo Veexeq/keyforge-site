@@ -1,3 +1,10 @@
+export interface ProductVariant {
+  id: number;
+  name: string;
+  priceModifier: number;
+  stockQuantity: number;
+}
+
 export interface ApiProduct {
   id: number;
   name: string;
@@ -14,6 +21,12 @@ export interface ApiProduct {
     url: string;
     altText: string;
   }[];
+  variants: {
+    id: number;
+    name: string;
+    priceModifier: string | number;
+    stockQuantity: number;
+  }[];
   // Data is return as a string
   createdAt: string;
 }
@@ -29,4 +42,5 @@ export interface Product {
   category: string;
   // Calculated in the front-end
   isNew: boolean;
+  variants: ProductVariant[];
 }

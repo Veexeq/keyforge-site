@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Check, Minus, Plus, ShieldCheck, ShoppingCart, Truck } from "lucide-react";
-import type { Product } from "@/mock_data/products";
-import { useState } from "react";
+import type { Product } from "@/types";
 
 interface ProductInfoProps {
   product: Product;

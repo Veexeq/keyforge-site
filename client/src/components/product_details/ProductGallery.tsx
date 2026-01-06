@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import AmbientGlow from "@/components/shared/AmbientGlow";
-import type { Product } from "@/mock_data/products";
+import type { Product } from "@/types"; 
 
 interface ProductGalleryProps {
   product: Product;
