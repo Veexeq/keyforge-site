@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Menu, Moon, ShoppingBag, Sun, User } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider"; 
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -10,24 +11,24 @@ export default function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         
         {/* Logo */}
-        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          {/* Insert keycap logo here */}
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        {/* TODO: put keycap logo here */}
           <span className="text-xl font-bold tracking-tighter text-foreground">
             KeyForge
           </span>
-        </a>
+        </Link>
 
         {/* Navigation */}
         <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-          {["About Us", "Our Products", "Gallery"].map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {item}
-            </a>
-          ))}
+          <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            About Us
+          </Link>
+          <Link to="/products" className="text-muted-foreground hover:text-foreground transition-colors">
+            Our Products
+          </Link>
+          <Link to="/gallery" className="text-muted-foreground hover:text-foreground transition-colors">
+            Gallery
+          </Link>
         </nav>
 
         {/* Actions */}

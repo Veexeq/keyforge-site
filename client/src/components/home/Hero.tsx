@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import AmbientGlow from "@/components/shared/AmbientGlow";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -25,14 +26,15 @@ export default function Hero() {
       <div className="mb-20 flex gap-4">
 
         {/* Glow button: Shadow matching primary color */}
-        <Button 
-          size="lg" 
-          className="rounded-full px-8 shadow-lg transition-all duration-300 hover:shadow-primary/25"
-        >
-          Buy now
+        <Button size="lg" className="rounded-full px-8 shadow-lg transition-all duration-300 hover:shadow-primary/25" asChild>
+          <Link to="/products">
+            Explore Collection
+          </Link>
         </Button>
-        <Button size="lg" variant="outline" className="rounded-full px-8">
-          See photos
+        <Button size="lg" variant="outline" className="rounded-full px-8" asChild>
+          <Link to="/gallery">
+            View Gallery
+          </Link>
         </Button>
       </div>
 
