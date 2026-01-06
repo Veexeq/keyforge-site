@@ -1,38 +1,60 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 
-dotenv.config();
-
-const app = express();
 const prisma = new PrismaClient();
-const port = process.env.PORT || 3000;
+const app = express();
+const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (_, res) => {
-  res.send('Działa! KeyForge Backend tutaj.');
-});
+// --- ENDPOINTS ---
 
 app.get('/api/products', async (_, res) => {
   try {
     const products = await prisma.product.findMany({
+      where: {
+        isDeleted: false,
+      },
       include: {
-        category: true, // Dołącz info o kategorii
-        variants: true, // Dołącz warianty (np. 10 Pack, 70 Pack)
-        images: true,   // Dołącz zdjęcia
-        reviews: true   // Dołącz opinie (jeśli są)
-      }
+        category: true,
+        images: true,
+        variants: true,
+      },
     });
+    
+    // TODO: front expects a number, we return a string in JSON, but it should manage
     res.json(products);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Błąd podczas pobierania produktów' });
+    res.status(500).json({ error: 'Failed to fetch products' });
   }
 });
 
-app.listen(port, () => {
-  console.log(`[server]: Serwer działa na porcie ${port}`);
+app.get('/api/products/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: Number(id) },
+      include: {
+        category: true,
+        images: true,
+        variants: true,
+      },
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch product' });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

@@ -1,22 +1,114 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { products } from "@/mock_data/products";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 
 import ProductGallery from "@/components/product_details/ProductGallery";
 import ProductInfo from "@/components/product_details/ProductInfo";
 import RelatedProducts from "@/components/product_details/RelatedProducts";
 
+import type { Product, ApiProduct } from "@/types";
+
 export default function ProductDetailsPage() {
   const { id } = useParams();
   const productId = Number(id);
 
-  const product = products.find((p) => p.id === productId);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  // Error State (404)
-  if (!product) {
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(false);
+      
+      try {
+        const resProduct = await fetch(`http://localhost:3000/api/products/${productId}`);
+        
+        if (!resProduct.ok) {
+            setError(true);
+            setLoading(false);
+            return;
+        }
+
+        const rawProduct: ApiProduct = await resProduct.json();
+
+        // Mapowanie pojedynczego produktu
+        const createdDate = new Date(rawProduct.createdAt);
+        const mappedProduct: Product = {
+            id: rawProduct.id,
+            name: rawProduct.name,
+            description: rawProduct.description,
+            price: parseFloat(rawProduct.basePrice),
+            discountPrice: rawProduct.discountPrice ? parseFloat(rawProduct.discountPrice) : undefined,
+            image: rawProduct.images[0]?.url || 'https://placehold.co/600x400',
+            category: rawProduct.category.name,
+            isNew: (Date.now() - createdDate.getTime()) < (30 * 24 * 60 * 60 * 1000),
+            variants: rawProduct.variants?.map((v) => ({
+                id: v.id,
+                name: v.name,
+                priceModifier: Number(v.priceModifier),
+                stockQuantity: v.stockQuantity
+            })) || []
+        };
+        
+        setProduct(mappedProduct);
+
+        // 2. Pobieramy WSZYSTKIE produkty dla sekcji "Related"
+        // (W dużej aplikacji zrobilibyśmy osobny endpoint /api/products?category=..., ale tu pobierzemy all i przefiltrujemy)
+        const resAll = await fetch('http://localhost:3000/api/products');
+        const rawAll: ApiProduct[] = await resAll.json();
+        
+        const related = rawAll
+            .filter(p => p.id !== productId) // Usuń obecny produkt
+            .slice(0, 4) // Weź tylko 4
+            .map(p => ({
+                // Uproszczone mapowanie dla miniaturek
+                id: p.id,
+                name: p.name,
+                description: p.description,
+                price: parseFloat(p.basePrice),
+                discountPrice: p.discountPrice ? parseFloat(p.discountPrice) : undefined,
+                image: p.images[0]?.url || 'https://placehold.co/600x400',
+                category: p.category.name,
+                isNew: false,
+                variants: []
+            }));
+
+        setRelatedProducts(related);
+
+      } catch (err) {
+        console.error(err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) {
+        fetchData();
+    }
+  }, [productId]);
+
+
+  // --- RENDER STANU ŁADOWANIA ---
+  if (loading) {
+      return (
+        <div className="min-h-screen flex flex-col bg-background">
+            <Navbar />
+            <main className="flex-1 flex items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            </main>
+            <Footer />
+        </div>
+      );
+  }
+
+  // --- RENDER STANU BŁĘDU (404) ---
+  if (error || !product) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
@@ -34,11 +126,7 @@ export default function ProductDetailsPage() {
     );
   }
 
-  // Logic for related items
-  const relatedProducts = products
-    .filter((p) => p.id !== productId)
-    .slice(0, 4);
-
+  // --- RENDER WŁAŚCIWY ---
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Navbar />

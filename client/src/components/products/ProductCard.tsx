@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
-import type { Product } from "@/mock_data/products";
 import { Link } from "react-router-dom"; 
+import type { Product } from "@/types"; // <--- JEDYNA ZMIANA: Import z types, nie mock_data
 
 interface ProductCardProps {
   product: Product;

@@ -1,5 +1,5 @@
 import ProductCard from "@/components/products/ProductCard";
-import type { Product } from "@/mock_data/products";
+import type { Product } from "@/types";
 
 interface RelatedProductsProps {
   products: Product[];
