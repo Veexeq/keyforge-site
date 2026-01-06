@@ -5,7 +5,6 @@ import Footer from "@/components/shared/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
-// Nowe komponenty
 import ProductGallery from "@/components/product_details/ProductGallery";
 import ProductInfo from "@/components/product_details/ProductInfo";
 import RelatedProducts from "@/components/product_details/RelatedProducts";
