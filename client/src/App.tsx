@@ -11,6 +11,7 @@ import ProfilePage from "./pages/ProfilePage";
 import AdminProductDetailsPage from "./pages/AdminProductDetailsPage";
 import AdminProductCreatePage from "./pages/AdminProductCreatePage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
+import CheckoutPage from "./pages/CheckoutPage";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/admin/products/:id" element={<AdminProductDetailsPage />} />
         <Route path="/admin/products/new" element={<AdminProductCreatePage />} />
         <Route path="/admin/products/:id/edit" element={<AdminProductEditPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
       </Routes>
     </>
   );

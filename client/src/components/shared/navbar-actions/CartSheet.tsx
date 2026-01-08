@@ -118,7 +118,7 @@ export default function CartSheet() {
             <SheetFooter>
               <SheetClose asChild>
                 <Button asChild className="w-full h-12 text-lg rounded-full shadow-lg shadow-primary/20">
-                  <Link to="/cart">
+                  <Link to="/checkout">
                     Checkout
                   </Link>
                 </Button>

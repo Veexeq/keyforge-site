@@ -529,7 +529,7 @@ app.put('/api/profile/password', authenticateToken, async (req: any, res: any) =
   try {
     // 1. Pobierz użytkownika, aby sprawdzić stare hasło
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    
+
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
@@ -602,6 +602,101 @@ app.delete('/api/profile/addresses/:id', authenticateToken, async (req: any, res
     res.json({ message: "Address deleted successfully." });
   } catch (error) {
     res.status(500).json({ error: "Failed to delete address." });
+  }
+});
+
+// --- SKŁADANIE ZAMÓWIENIA (CHECKOUT) ---
+app.post('/api/orders', authenticateToken, async (req: any, res: any) => {
+  const userId = req.user.userId;
+  const { items, address } = req.body;
+  // items: [{ variantId: 1, quantity: 2 }, ...]
+  // address: { city, street, postalCode, houseNumber, country }
+
+  if (!items || items.length === 0) {
+    return res.status(400).json({ error: "Cart is empty" });
+  }
+  if (!address) {
+    return res.status(400).json({ error: "Shipping address is required" });
+  }
+
+  try {
+    await prisma.$transaction(async (tx: any) => {
+      let totalAmount = 0;
+      const orderItemsData = [];
+
+      // 1. Sprawdzamy dostępność każdego przedmiotu i liczymy cenę
+      for (const item of items) {
+        const variant = await tx.productVariant.findUnique({
+          where: { id: item.variantId },
+          include: { product: true }
+        });
+
+        if (!variant) {
+          throw new Error(`Variant ID ${item.variantId} not found`);
+        }
+
+        if (variant.stockQuantity < item.quantity) {
+          throw new Error(`Not enough stock for ${variant.product.name} (${variant.name})`);
+        }
+
+        // Logika ceny: (Promocja lub Baza) + Modifier Wariantu
+        const basePrice = Number(variant.product.discountPrice || variant.product.basePrice);
+        const modifier = Number(variant.priceModifier);
+        const finalUnitPrice = basePrice + modifier;
+
+        totalAmount += finalUnitPrice * item.quantity;
+
+        // Przygotowujemy dane do OrderItem
+        orderItemsData.push({
+          variantId: variant.id,
+          quantity: item.quantity,
+          unitPrice: finalUnitPrice
+        });
+
+        // 2. Zmniejszamy stan magazynowy
+        await tx.productVariant.update({
+          where: { id: variant.id },
+          data: { stockQuantity: { decrement: item.quantity } }
+        });
+
+        // 3. Zwiększamy licznik sprzedaży produktu (boughtCount)
+        await tx.product.update({
+          where: { id: variant.product.id },
+          data: { boughtCount: { increment: item.quantity } }
+        });
+      }
+
+      // 4. Tworzymy zamówienie
+      const order = await tx.order.create({
+        data: {
+          userId,
+          status: 'PENDING', // Domyślny status
+          totalAmount,
+          // Snapshot adresu
+          country: address.country || "Poland",
+          city: address.city,
+          street: address.street,
+          postalCode: address.postalCode,
+          houseNumber: address.houseNumber,
+          // Relacja Items
+          items: {
+            create: orderItemsData
+          }
+        }
+      });
+
+      return order;
+    });
+
+    res.status(201).json({ message: "Order placed successfully" });
+
+  } catch (error: any) {
+    console.error("Checkout error:", error);
+    // Jeśli błąd pochodzi z naszej walidacji (np. brak stanu), wysyłamy 400
+    if (error.message.includes("Not enough stock") || error.message.includes("not found")) {
+      return res.status(400).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Failed to place order" });
   }
 });
 
