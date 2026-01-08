@@ -50,12 +50,6 @@ export default function MobileMenu() {
           >
             Gallery
           </Link>
-          <Link 
-            to="#" 
-            className="text-lg font-medium hover:text-primary transition-colors text-muted-foreground"
-          >
-            About Us
-          </Link>
         </div>
 
         {/* Theme Toggle */}
