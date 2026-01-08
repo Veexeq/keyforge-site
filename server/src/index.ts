@@ -301,7 +301,7 @@ app.patch('/api/admin/variants/:variantId/stock', authenticateToken, authorizeAd
 });
 
 app.post('/api/admin/products', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
-  const { name, description, categoryId, basePrice, imageUrl, variants } = req.body;
+  const { name, description, categoryId, basePrice, discountPrice, imageUrl, variants } = req.body;
 
   if (!name || !categoryId || !basePrice || !variants || variants.length === 0) {
     return res.status(400).json({ error: "Missing required fields or variants" });
@@ -314,6 +314,7 @@ app.post('/api/admin/products', authenticateToken, authorizeAdmin, async (req: a
         description: description || "",
         categoryId: Number(categoryId),
         basePrice: Number(basePrice),
+        discountPrice: discountPrice ? Number(discountPrice) : null,
         images: imageUrl ? {
           create: {
             url: imageUrl,
@@ -389,7 +390,7 @@ app.delete('/api/admin/products/:id', authenticateToken, authorizeAdmin, async (
 
 app.put('/api/admin/products/:id', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
   const { id } = req.params;
-  const { name, description, categoryId, basePrice, imageUrl, variants } = req.body;
+  const { name, description, categoryId, basePrice, discountPrice, imageUrl, variants } = req.body;
   const productId = Number(id);
 
   try {
@@ -401,6 +402,7 @@ app.put('/api/admin/products/:id', authenticateToken, authorizeAdmin, async (req
           description,
           categoryId: Number(categoryId),
           basePrice: Number(basePrice),
+          discountPrice: discountPrice ? Number(discountPrice) : null,
         }
       });
 

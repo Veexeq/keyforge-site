@@ -88,6 +88,7 @@ export interface AdminProduct {
   id: number;
   name: string;
   basePrice: string;
+  discountPrice: string;
   category: {
     name: string;
   };

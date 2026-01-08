@@ -74,7 +74,22 @@ export default function AdminProductsTable(
 
                 <TableCell>{product.category.name}</TableCell>
 
-                <TableCell>{parseFloat(product.basePrice).toFixed(2)} PLN</TableCell>
+                <TableCell>
+                  <div className="flex flex-col">
+                    {product.discountPrice ? (
+                      <>
+                        <span className="font-bold text-orange-600">
+                          {parseFloat(product.discountPrice).toFixed(2)} PLN
+                        </span>
+                        <span className="text-xs text-muted-foreground line-through">
+                          {parseFloat(product.basePrice).toFixed(2)} PLN
+                        </span>
+                      </>
+                    ) : (
+                      <span>{parseFloat(product.basePrice).toFixed(2)} PLN</span>
+                    )}
+                  </div>
+                </TableCell>
 
                 <TableCell>
                   <Badge variant={product.totalStock > 10 ? "outline" : "destructive"}>
@@ -90,10 +105,10 @@ export default function AdminProductsTable(
 
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      title="View Details" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="View Details"
                       onClick={() => navigate(`/admin/products/${product.id}`)}
                     >
                       <Eye className="h-4 w-4" />
@@ -105,8 +120,8 @@ export default function AdminProductsTable(
                       onClick={() => onToggleStatus(product.id, product.status)}
                     >
                       <Archive className={`h-4 w-4 ${product.status === 'ACTIVE'
-                          ? 'text-orange-500 hover:text-orange-600'
-                          : 'text-green-600 hover:text-green-700'
+                        ? 'text-orange-500 hover:text-orange-600'
+                        : 'text-green-600 hover:text-green-700'
                         }`} />
                     </Button>
                     <Button variant="ghost" size="icon" title="Delete Permanently" onClick={() => onDelete(product.id)}>

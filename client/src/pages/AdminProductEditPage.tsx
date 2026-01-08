@@ -36,6 +36,7 @@ export default function AdminProductEditPage() {
   const [basePrice, setBasePrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [discountPrice, setDiscountPrice] = useState("");
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [variants, setVariants] = useState<VariantForm[]>([]);
@@ -63,6 +64,7 @@ export default function AdminProductEditPage() {
         setDescription(product.description || "");
         setBasePrice(product.basePrice);
         setCategoryId(product.categoryId.toString());
+        setDiscountPrice(product.discountPrice ? product.discountPrice.toString() : "");
 
         if (product.images && product.images.length > 0) {
           setImageUrl(product.images[0].url);
@@ -124,8 +126,9 @@ export default function AdminProductEditPage() {
           description,
           categoryId,
           basePrice,
+          discountPrice,
           imageUrl,
-          variants // Backend sobie poradzi z ID lub ich brakiem
+          variants
         })
       });
 
@@ -193,12 +196,31 @@ export default function AdminProductEditPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Base Price (PLN)</label>
-                  <Input type="number" step="0.01" required value={basePrice} onChange={e => setBasePrice(e.target.value)} />
+                  <Input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={basePrice}
+                    onChange={e => setBasePrice(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Image URL</label>
-                  <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
+                  <label className="text-sm font-medium text-orange-600">Sale Price (Optional)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={discountPrice}
+                    onChange={e => setDiscountPrice(e.target.value)}
+                    placeholder="Leave empty for no sale"
+                    className="border-orange-200 focus-visible:ring-orange-500"
+                  />
                 </div>
+              </div>
+
+              {/* Image URL przenieś niżej lub zostaw w osobnym divie */}
+              <div className="space-y-2 pt-2">
+                <label className="text-sm font-medium">Image URL</label>
+                <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://..." />
               </div>
             </CardContent>
           </Card>
