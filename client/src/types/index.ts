@@ -45,3 +45,41 @@ export interface Product {
   isNew: boolean;
   variants: ProductVariant[];
 }
+
+export interface Address {
+  id: number;
+  city: string;
+  street: string;
+  postalCode: string;
+  houseNumber: string;
+  country: string;
+  isDefault: boolean;
+}
+
+export interface OrderItem {
+  id: number;
+  quantity: number;
+  unitPrice: string;
+  variant: {
+    name: string;
+  };
+}
+
+export interface Order {
+  id: number;
+  orderDate: string;
+  status: string;
+  totalAmount: string;
+  items: OrderItem[];
+}
+
+export interface UserProfile {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  createdAt: string;
+  addresses: Address[];
+  orders: Order[];
+}
