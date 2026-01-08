@@ -556,6 +556,55 @@ app.put('/api/profile/password', authenticateToken, async (req: any, res: any) =
   }
 });
 
+app.post('/api/profile/addresses', authenticateToken, async (req: any, res: any) => {
+  const { country, city, street, postalCode, houseNumber } = req.body;
+  const userId = req.user.userId;
+
+  if (!city || !street || !postalCode || !houseNumber) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
+  try {
+    const newAddress = await prisma.savedAddress.create({
+      data: {
+        userId,
+        country: country || "Poland",
+        city,
+        street,
+        postalCode,
+        houseNumber
+      }
+    });
+    res.json(newAddress);
+  } catch (error) {
+    console.error("Add address error:", error);
+    res.status(500).json({ error: "Failed to add address." });
+  }
+});
+
+// --- USUWANIE ADRESU ---
+app.delete('/api/profile/addresses/:id', authenticateToken, async (req: any, res: any) => {
+  const { id } = req.params;
+  const userId = req.user.userId;
+
+  try {
+    const result = await prisma.savedAddress.deleteMany({
+      where: {
+        id: Number(id),
+        userId: userId
+      }
+    });
+
+    if (result.count === 0) {
+      return res.status(404).json({ error: "Address not found or access denied." });
+    }
+
+    res.json({ message: "Address deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete address." });
+  }
+});
+
 // -- DEBUG ENDPOINTS --
 app.get('/api/rawdata/accounts', async (_, res) => {
   const accounts = await prisma.user.findMany();

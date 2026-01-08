@@ -15,6 +15,7 @@ interface AuthContextType {
   login: (token: string, userData: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  updateUser: (data: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -62,8 +63,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.href = "/";
   };
 
+  const updateUser = (userData: Partial<User>) => {
+    if (user) {
+      // 1. Scalamy stare dane z nowymi
+      const updatedUser = { ...user, ...userData };
+      
+      // 2. Aktualizujemy stan Reacta
+      setUser(updatedUser);
+
+      // 3. Aktualizujemy localStorage (żeby po odświeżeniu F5 dane nie zniknęły)
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

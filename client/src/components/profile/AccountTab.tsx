@@ -12,7 +12,7 @@ interface AccountTabProps {
 }
 
 export default function AccountTab({ profile }: AccountTabProps) {
-  const { token } = useAuth();
+  const { token, updateUser } = useAuth();
   
   // Stan dla Danych Osobowych
   const [firstName, setFirstName] = useState(profile.firstName);
@@ -41,6 +41,7 @@ export default function AccountTab({ profile }: AccountTabProps) {
       });
 
       if (res.ok) {
+        updateUser({ firstName, lastName });
         alert("Profile details updated successfully!");
         // Opcjonalnie: można tu odświeżyć całą stronę lub context, 
         // ale inputy mają już nowe wartości, więc wizualnie jest ok.
