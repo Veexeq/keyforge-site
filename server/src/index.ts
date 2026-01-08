@@ -171,32 +171,28 @@ app.get('/api/profile', authenticateToken, async (req: any, res: any) => {
   }
 });
 
-app.get('/api/admin/products', authenticateToken, authorizeAdmin, async (req, res) => {
+app.get('/api/admin/products', authenticateToken, authorizeAdmin, async (_, res) => {
   try {
     const products = await prisma.product.findMany({
       include: {
         category: true,
-        // Pobieramy warianty, żeby policzyć stan magazynowy
         variants: true, 
-        // Pobieramy obrazki, żeby mieć miniaturkę w panelu
         images: true 
       },
       orderBy: { createdAt: 'desc' }
     });
 
     const adminProducts = products.map((p) => {
-        // Liczymy stan magazynowy
         const totalStock = p.variants.reduce((acc, v) => acc + v.stockQuantity, 0);
         
         return {
             id: p.id,
             name: p.name,
-            basePrice: p.basePrice, // Prisma zwraca Decimal, Express zamieni to na string w JSON
+            basePrice: p.basePrice,
             category: p.category,
             totalStock,
             status: p.isDeleted ? 'ARCHIVED' : 'ACTIVE',
             boughtCount: p.boughtCount, 
-            // Bierzemy pierwszy obrazek lub null
             image: p.images && p.images.length > 0 ? p.images[0].url : null
         };
     });
@@ -205,6 +201,23 @@ app.get('/api/admin/products', authenticateToken, authorizeAdmin, async (req, re
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch admin products' });
+  }
+});
+
+app.patch('/api/admin/products/:id/status', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  const { id } = req.params;
+  const { isDeleted } = req.body;
+
+  try {
+    const updatedProduct = await prisma.product.update({
+      where: { id: Number(id) },
+      data: { isDeleted: isDeleted },
+    });
+
+    res.json(updatedProduct);
+  } catch (error) {
+    console.error("Status update error:", error);
+    res.status(500).json({ error: "Failed to update product status" });
   }
 });
 

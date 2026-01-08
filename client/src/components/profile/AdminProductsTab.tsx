@@ -111,6 +111,38 @@ export default function AdminProductsTab() {
         return result;
     }, [products, searchTerm, statusFilter, categoryFilter, sortConfig]);
 
+    const handleToggleStatus = async (productId: number, currentStatus: 'ACTIVE' | 'ARCHIVED') => {
+        const newIsDeleted = currentStatus === 'ACTIVE'; 
+
+        try {
+            const res = await fetch(`http://localhost:3000/api/admin/products/${productId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ isDeleted: newIsDeleted })
+            });
+
+            if (res.ok) {
+                setProducts(prevProducts => prevProducts.map(p => {
+                    if (p.id === productId) {
+                        return {
+                            ...p,
+                            status: newIsDeleted ? 'ARCHIVED' : 'ACTIVE'
+                        };
+                    }
+                    return p;
+                }));
+                
+            } else {
+                console.error("Failed to update status");
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+        }
+    };
+
     if (loading) return (
         <div className="py-12 flex justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -146,6 +178,7 @@ export default function AdminProductsTab() {
                 products={filteredProducts}
                 sortConfig={sortConfig}
                 onSort={handleSort}
+                onToggleStatus={handleToggleStatus}
             />
 
             <div className="text-xs text-muted-foreground text-right">
