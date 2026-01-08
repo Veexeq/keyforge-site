@@ -700,6 +700,47 @@ app.post('/api/orders', async (req: any, res: any) => {
   }
 });
 
+app.get('/api/admin/orders', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+    try {
+        const orders = await prisma.order.findMany({
+            include: {
+                user: {
+                    select: { id: true, email: true, firstName: true, lastName: true }
+                },
+                items: {
+                    include: {
+                        variant: {
+                            include: { product: true }
+                        }
+                    }
+                }
+            },
+            orderBy: { orderDate: 'desc' } // Najnowsze na górze
+        });
+        res.json(orders);
+    } catch (error) {
+        console.error("Fetch orders error:", error);
+        res.status(500).json({ error: "Failed to fetch orders" });
+    }
+});
+
+// --- ADMIN: ZMIEŃ STATUS ZAMÓWIENIA ---
+app.patch('/api/admin/orders/:id/status', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+    const { id } = req.params;
+    const { status } = req.body; // np. "SHIPPED", "DELIVERED"
+
+    try {
+        const updatedOrder = await prisma.order.update({
+            where: { id: Number(id) },
+            data: { status }
+        });
+        res.json(updatedOrder);
+    } catch (error) {
+        console.error("Update status error:", error);
+        res.status(500).json({ error: "Failed to update order status" });
+    }
+});
+
 // -- DEBUG ENDPOINTS --
 app.get('/api/rawdata/accounts', async (_, res) => {
   const accounts = await prisma.user.findMany();

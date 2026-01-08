@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Package } from "lucide-react";
 import type { AdminProduct, ProductStatus, SortConfig } from "@/types";
 
 // Importujemy nasze nowe komponenty
@@ -177,11 +177,27 @@ export default function AdminProductsTab() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <Button onClick={() => navigate("/admin/orders")} variant="outline" className="w-full justify-start h-auto py-4 px-6">
+          <div className="flex items-center gap-4">
+            <div className="p-2 bg-blue-100 text-blue-600 rounded-full">
+              <Package className="h-6 w-6" />
+            </div>
+            <div className="text-left">
+              <h3 className="font-semibold">Manage Orders</h3>
+              <p className="text-sm text-muted-foreground">View and process customer orders</p>
+            </div>
+          </div>
+        </Button>
+      </div>
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Product Management</h2>
           <p className="text-muted-foreground">Manage inventory, prices, and availability.</p>
         </div>
+
         <Button onClick={() => navigate("/admin/products/new")}>
           <Plus className="mr-2 h-4 w-4" /> Add Product
         </Button>
