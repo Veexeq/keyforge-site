@@ -109,6 +109,15 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+app.get('/api/rawdata/accounts', async (_, res) => {
+  const accounts = await prisma.user.findMany();
+  if (accounts.length === 0) {
+    return res.status(404).json({ message: 'No accounts registered' });
+  }
+
+  return res.status(200).json(accounts);
+}); 
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

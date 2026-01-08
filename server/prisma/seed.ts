@@ -1,4 +1,5 @@
 import { PrismaClient, Role } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -18,14 +19,19 @@ async function main() {
 
   console.log('🧹 Database cleared.');
 
-  // 2. Users
-  const adminPassword = "hashed_admin_password_123"; 
-  const userPassword = "hashed_user_password_123";
+  // Hash generators
+  const saltRounds = 10;
+  
+  const adminPlainPassword = process.env.ADMIN_PASS || "admin123" ;
+  const clientPlainPassword = process.env.GUESS_PASS || "guest123";
+
+  const adminPasswordHash = await bcrypt.hash(adminPlainPassword, saltRounds);
+  const clientPasswordHash = await bcrypt.hash(clientPlainPassword, saltRounds);
 
   await prisma.user.create({
     data: {
       email: 'admin@keyforge.com',
-      passwordHash: adminPassword,
+      passwordHash: adminPasswordHash,
       firstName: 'Admin',
       lastName: 'Master',
       role: Role.ADMIN,
@@ -35,7 +41,7 @@ async function main() {
   await prisma.user.create({
     data: {
       email: 'client@example.com',
-      passwordHash: userPassword,
+      passwordHash: clientPasswordHash,
       firstName: 'John',
       lastName: 'Doe',
       role: Role.CLIENT,
@@ -59,7 +65,7 @@ async function main() {
 
   // --- PRODUCTS ---
 
-  // A. KEYCAPS (Note: Added discountPrice property)
+  // A. KEYCAPS
   const keycapsData = [
     { name: 'GMK Red Samurai', price: 150.00, discount: 129.00, desc: 'Legendary set featuring a deep red, black, and gold colorway inspired by samurai armor. Cherry profile, ABS Double-shot.' },
     { name: 'ePBT Sushi', price: 90.00, discount: null, desc: 'Clean Japanese aesthetic with Hiragana sublegends. Cherry profile, PBT Dye-sub for durability.' },
@@ -80,7 +86,7 @@ async function main() {
         name: k.name,
         description: k.desc,
         basePrice: k.price,
-        discountPrice: k.discount, // Mapping discount
+        discountPrice: k.discount,
         images: {
           create: { url: `https://placehold.co/600x600?text=${encodeURIComponent(k.name)}`, altText: k.name }
         },
@@ -173,4 +179,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-  
