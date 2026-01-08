@@ -88,7 +88,7 @@ export default function ProfilePage() {
         </div>
 
         <Tabs defaultValue="account" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-flex"> 
+          <TabsList className="w-full grid grid-cols-2 h-auto lg:w-auto lg:inline-flex lg:h-10">
             
             <TabsTrigger value="account" className="gap-2">
                 <UserIcon className="h-4 w-4 hidden sm:block"/> Account
