@@ -45,7 +45,7 @@ export default function Navbar() {
         {/* Actions Area */}
         <div className="flex items-center gap-2">
           
-          {/* Theme Toggle (Desktop only - mobile has it inside menu) */}
+          {/* Theme Toggle */}
           <div className="hidden md:block">
             <Button
               variant="ghost"
@@ -60,7 +60,9 @@ export default function Navbar() {
           </div>
 
           <UserNav />
+          
           <CartSheet />
+          
           <MobileMenu />
           
         </div>
