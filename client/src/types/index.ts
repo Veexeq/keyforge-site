@@ -96,3 +96,7 @@ export interface AdminProduct {
   boughtCount: number;
   image?: string;
 }
+
+export type ProductStatus = 'ALL' | 'ACTIVE' | 'ARCHIVED';
+export type SortDirection = 'asc' | 'desc';
+export type SortConfig = { key: string; direction: SortDirection };
