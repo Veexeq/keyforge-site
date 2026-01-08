@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCart } from "@/context/CartContext"; // <--- Importujemy Twój obecny Context
+import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
@@ -8,27 +8,68 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, CreditCard, Truck } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Potrzebujesz shadcn select
+import { Loader2, CreditCard, Truck, User as UserIcon } from "lucide-react";
+import type { Address } from "@/types";
 
 export default function CheckoutPage() {
-  // ZMIANA: Używamy nazw z Twojego CartContext (items zamiast cartItems, cartTotal zamiast totalPrice)
   const { items, cartTotal, clearCart } = useCart();
-
-  const { token, isAuthenticated } = useAuth();
+  const { token, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
 
-  // Formularz adresu
+  // Formularz
+  const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
   const [street, setStreet] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
   const [country, setCountry] = useState("Poland");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
-  // Jeśli koszyk pusty, przekieruj
+  // Zapisane adresy (tylko dla zalogowanych)
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+
+  // 1. Pobierz adresy i email, jeśli użytkownik jest zalogowany
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      // Ustawiamy email i nazwę z danych usera
+      if (user) {
+        setEmail(user.email);
+        setFirstName(user.firstName);
+        setLastName(user.lastName);
+      }
+
+      // Pobieramy adresy z profilu
+      fetch("http://localhost:3000/api/profile", {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.addresses) {
+            setSavedAddresses(data.addresses);
+          }
+        })
+        .catch(err => console.error("Failed to load addresses", err));
+    }
+  }, [isAuthenticated, token, user]);
+
+  // Funkcja do autouzupełniania po wybraniu adresu z listy
+  const handleSelectAddress = (addressId: string) => {
+    const selected = savedAddresses.find(addr => addr.id.toString() === addressId);
+    if (selected) {
+      setCity(selected.city);
+      setStreet(selected.street);
+      setPostalCode(selected.postalCode);
+      setHouseNumber(selected.houseNumber);
+      setCountry(selected.country);
+    }
+  };
+
   if (items.length === 0) {
-    return (
+    return ( /* ... Widok pustego koszyka bez zmian ... */
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
         <main className="flex-1 flex flex-col items-center justify-center p-4">
@@ -42,43 +83,43 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-
     setLoading(true);
 
-    // ZMIANA: Mapujemy 'items' na format oczekiwany przez backend
-    // Twój CartItem ma 'variantId' jako opcjonalne (?), ale backend wymaga ID wariantu.
-    // Filtrujemy, żeby upewnić się, że wysyłamy tylko poprawne warianty.
     const itemsPayload = items
       .filter(item => item.variantId !== undefined)
       .map(item => ({
-        variantId: item.variantId!, // wykrzyknik, bo filter wyżej gwarantuje, że nie jest undefined
+        variantId: item.variantId!,
         quantity: item.quantity
       }));
 
     const addressPayload = { city, street, postalCode, houseNumber, country };
 
     try {
+      const headers: Record<string, string> = {"Content-Type": "application/json"};
+      // Dodajemy token TYLKO jeśli użytkownik jest zalogowany
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch("http://localhost:3000/api/orders", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
+        headers: headers,
         body: JSON.stringify({
           items: itemsPayload,
-          address: addressPayload
+          address: addressPayload,
+          email: email // Wysyłamy email
         })
       });
 
       if (res.ok) {
         clearCart();
-        navigate("/profile");
-        alert("Order placed successfully! Thank you.");
+        // Jeśli zalogowany -> Profil, Jeśli gość -> Strona główna (lub podziękowanie)
+        if (isAuthenticated) {
+          navigate("/profile");
+        } else {
+          alert("Order placed successfully! Check your email.");
+          navigate("/");
+        }
       } else {
         const err = await res.json();
         alert(`Order failed: ${err.error}`);
@@ -95,28 +136,66 @@ export default function CheckoutPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+        <h1 className="text-3xl font-bold mb-8">Checkout {isAuthenticated ? "" : "(Guest)"}</h1>
 
         <div className="grid md:grid-cols-3 gap-8">
-
-          {/* LEWA KOLUMNA: Formularz Adresowy */}
           <div className="md:col-span-2 space-y-6">
+
+            {/* SEKCJA ZAPISANYCH ADRESÓW (Tylko dla zalogowanych) */}
+            {isAuthenticated && savedAddresses.length > 0 && (
+              <Card className="bg-muted/30 border-dashed">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <UserIcon className="h-4 w-4" /> Load Saved Address
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Select onValueChange={handleSelectAddress}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select from your address book..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {savedAddresses.map(addr => (
+                        <SelectItem key={addr.id} value={addr.id.toString()}>
+                          {addr.city}, {addr.street} {addr.houseNumber}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+            )}
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Truck className="h-5 w-5" /> Shipping Address
+                  <Truck className="h-5 w-5" /> Shipping Details
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <form id="checkout-form" onSubmit={handlePlaceOrder} className="grid gap-4">
+
+                  {/* EMAIL (Kluczowy dla gości) */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="We will send order confirmation here"
+                      required
+                    />
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="firstName">First Name</Label>
-                      <Input id="firstName" placeholder="Jan" required />
+                      <Input id="firstName" value={firstName} onChange={e => setFirstName(e.target.value)} required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="lastName">Last Name</Label>
-                      <Input id="lastName" placeholder="Kowalski" required />
+                      <Input id="lastName" value={lastName} onChange={e => setLastName(e.target.value)} required />
                     </div>
                   </div>
 
@@ -150,6 +229,7 @@ export default function CheckoutPage() {
               </CardContent>
             </Card>
 
+            {/* ... Payment Card bez zmian ... */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -163,9 +243,10 @@ export default function CheckoutPage() {
                 </p>
               </CardContent>
             </Card>
+
           </div>
 
-          {/* PRAWA KOLUMNA: Podsumowanie */}
+          {/* ... Prawa kolumna (Summary) bez zmian ... */}
           <div>
             <Card className="sticky top-24">
               <CardHeader>
@@ -173,7 +254,6 @@ export default function CheckoutPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2 max-h-60 overflow-auto">
-                  {/* ZMIANA: Używamy 'items' zamiast 'cartItems' */}
                   {items.map((item) => (
                     <div key={`${item.productId}-${item.variantId}`} className="flex justify-between text-sm">
                       <span>
@@ -188,7 +268,6 @@ export default function CheckoutPage() {
 
                 <div className="border-t pt-4 flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  {/* ZMIANA: Używamy 'cartTotal' zamiast 'totalPrice' */}
                   <span>{cartTotal.toFixed(2)} PLN</span>
                 </div>
 

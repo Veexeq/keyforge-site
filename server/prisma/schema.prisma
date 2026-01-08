@@ -102,22 +102,26 @@ model Image {
 }
 
 model Order {
-  id          Int         @id @default(autoincrement())
-  userId      Int?        // Nullable dla gości
-  guestEmail  String?
-  orderDate   DateTime    @default(now())
-  status      OrderStatus @default(PENDING)
-  totalAmount Decimal     @db.Decimal(10, 2)
-   
-  // Snapshot adresu
+  id          Int      @id @default(autoincrement())
+  // Zmiana: userId jest teraz opcjonalny (Int?)
+  userId      Int?     
+  user        User?    @relation(fields: [userId], references: [id])
+  
+  // Dodaj pole email (dla gości i jako kopia dla zalogowanych)
+  email       String   // <--- NOWE POLE
+
+  status      String   @default("PENDING")
+  totalAmount Decimal
+  orderDate   DateTime @default(now())
+  
+  // Adres (snapshot)
   country     String
   city        String
   street      String
   postalCode  String
   houseNumber String
-
-  user  User?       @relation(fields: [userId], references: [id])
-  items OrderItem[]
+  
+  items       OrderItem[]
 }
 
 model OrderItem {
