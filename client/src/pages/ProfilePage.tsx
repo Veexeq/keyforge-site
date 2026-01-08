@@ -4,11 +4,13 @@ import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Loader2, MapPin, Package, User as UserIcon, LogOut } from "lucide-react";
 import type { UserProfile } from "@/types";
+
+import AccountTab from "@/components/profile/AccountTab";
+import OrdersTab from "@/components/profile/OrdersTab";
+import AddressesTab from "@/components/profile/AddressesTab";
 
 export default function ProfilePage() {
   const { token, logout, isAuthenticated } = useAuth();
@@ -17,14 +19,14 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 1. Zabezpieczenie: Jeśli nie ma tokena, wyrzuć do logowania
+  // Auth
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
-  // 2. Pobieranie danych
+  // Data request
   useEffect(() => {
     const fetchProfile = async () => {
       if (!token) return;
@@ -32,7 +34,7 @@ export default function ProfilePage() {
       try {
         const res = await fetch("http://localhost:3000/api/profile", {
           headers: {
-            "Authorization": `Bearer ${token}` // <--- KLUCZOWE: Wysyłamy token!
+            "Authorization": `Bearer ${token}`
           }
         });
 
@@ -40,7 +42,6 @@ export default function ProfilePage() {
           const data = await res.json();
           setProfile(data);
         } else {
-          // Jeśli token wygasł lub jest błędny -> wyloguj
           logout();
         }
       } catch (error) {
@@ -52,6 +53,8 @@ export default function ProfilePage() {
 
     fetchProfile();
   }, [token, logout]);
+
+  // --- RENDERS ---
 
   if (loading) {
     return (
@@ -71,128 +74,41 @@ export default function ProfilePage() {
       <Navbar />
       
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
-            <p className="text-muted-foreground">Manage your account and view orders.</p>
+            <p className="text-muted-foreground">
+              Welcome back, {profile.firstName}! Manage your account settings here.
+            </p>
           </div>
-          <Button variant="outline" onClick={logout} className="gap-2 text-destructive hover:text-destructive">
+          <Button variant="outline" onClick={logout} className="gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive w-full sm:w-auto">
             <LogOut className="h-4 w-4" /> Log out
           </Button>
         </div>
 
-        <Tabs defaultValue="account" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="account" className="gap-2"><UserIcon className="h-4 w-4"/> Account</TabsTrigger>
-            <TabsTrigger value="orders" className="gap-2"><Package className="h-4 w-4"/> Orders</TabsTrigger>
-            <TabsTrigger value="addresses" className="gap-2"><MapPin className="h-4 w-4"/> Addresses</TabsTrigger>
+        <Tabs defaultValue="account" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+            <TabsTrigger value="account" className="gap-2">
+                <UserIcon className="h-4 w-4 hidden sm:block"/> Account
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="gap-2">
+                <Package className="h-4 w-4 hidden sm:block"/> Orders
+            </TabsTrigger>
+            <TabsTrigger value="addresses" className="gap-2">
+                <MapPin className="h-4 w-4 hidden sm:block"/> Addresses
+            </TabsTrigger>
           </TabsList>
 
-          {/* --- TAB: ACCOUNT --- */}
           <TabsContent value="account">
-            <Card>
-              <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
-                <CardDescription>Your basic account details.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">First Name</span>
-                    <p className="text-lg font-medium">{profile.firstName}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">Last Name</span>
-                    <p className="text-lg font-medium">{profile.lastName}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">Email</span>
-                    <p className="text-lg font-medium">{profile.email}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium text-muted-foreground">Member Since</span>
-                    <p className="text-lg font-medium">
-                      {new Date(profile.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <AccountTab profile={profile} />
           </TabsContent>
 
-          {/* --- TAB: ORDERS --- */}
           <TabsContent value="orders">
-            <Card>
-              <CardHeader>
-                <CardTitle>Order History</CardTitle>
-                <CardDescription>Check the status of your recent purchases.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {profile.orders.length > 0 ? (
-                  <div className="space-y-6">
-                    {profile.orders.map((order) => (
-                      <div key={order.id} className="flex flex-col sm:flex-row justify-between border-b pb-4 last:border-0 last:pb-0">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                             <span className="font-semibold">Order #{order.id}</span>
-                             <Badge variant={order.status === "DELIVERED" ? "default" : "secondary"}>
-                               {order.status}
-                             </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(order.orderDate).toLocaleDateString()}
-                          </p>
-                          <div className="text-sm mt-2">
-                             {order.items.map((item, idx) => (
-                               <div key={idx} className="text-muted-foreground">
-                                 {item.quantity}x {item.variant.name}
-                               </div>
-                             ))}
-                          </div>
-                        </div>
-                        <div className="mt-4 sm:mt-0 font-bold text-lg">
-                          {parseFloat(order.totalAmount).toFixed(2)} PLN
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No orders found. Go buy some keycaps!
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <OrdersTab orders={profile.orders} />
           </TabsContent>
 
-          {/* --- TAB: ADDRESSES --- */}
           <TabsContent value="addresses">
-            <Card>
-              <CardHeader>
-                <CardTitle>Saved Addresses</CardTitle>
-                <CardDescription>Manage your shipping addresses.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {profile.addresses.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {profile.addresses.map((addr) => (
-                      <div key={addr.id} className="rounded-lg border p-4 relative">
-                        {addr.isDefault && (
-                          <Badge className="absolute top-2 right-2" variant="secondary">Default</Badge>
-                        )}
-                        <p className="font-semibold">{addr.street} {addr.houseNumber}</p>
-                        <p>{addr.postalCode} {addr.city}</p>
-                        <p className="text-muted-foreground text-sm">{addr.country}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No addresses saved yet.
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <AddressesTab addresses={profile.addresses} />
           </TabsContent>
         </Tabs>
       </main>
