@@ -13,6 +13,23 @@ const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-change-me";
 app.use(cors());
 app.use(express.json());
 
+const authenticateToken = (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access denied. No token provided.' });
+  }
+
+  try {
+    const verified = jwt.verify(token, process.env.JWT_SECRET || "super-secret-key-change-me");
+    req.user = verified;
+    next();
+  } catch (error) {
+    res.status(403).json({ error: 'Invalid token.' });
+  }
+};
+
 // --- ENDPOINTS ---
 app.get('/api/products', async (_, res) => {
   try {
@@ -109,6 +126,45 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+app.get('/api/profile', authenticateToken, async (req: any, res: any) => {
+  try {
+    const userId = req.user.userId;
+
+    const userProfile = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        createdAt: true,
+        addresses: true,
+        orders: {
+          orderBy: { orderDate: 'desc' },
+          include: {
+            items: {
+              include: {
+                variant: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!userProfile) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(userProfile);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+// -- DEBUG ENDPOINTS --
 app.get('/api/rawdata/accounts', async (_, res) => {
   const accounts = await prisma.user.findMany();
   if (accounts.length === 0) {
