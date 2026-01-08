@@ -701,44 +701,99 @@ app.post('/api/orders', async (req: any, res: any) => {
 });
 
 app.get('/api/admin/orders', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
-    try {
-        const orders = await prisma.order.findMany({
-            include: {
-                user: {
-                    select: { id: true, email: true, firstName: true, lastName: true }
-                },
-                items: {
-                    include: {
-                        variant: {
-                            include: { product: true }
-                        }
-                    }
-                }
-            },
-            orderBy: { orderDate: 'desc' } // Najnowsze na górze
-        });
-        res.json(orders);
-    } catch (error) {
-        console.error("Fetch orders error:", error);
-        res.status(500).json({ error: "Failed to fetch orders" });
-    }
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        user: {
+          select: { id: true, email: true, firstName: true, lastName: true }
+        },
+        items: {
+          include: {
+            variant: {
+              include: { product: true }
+            }
+          }
+        }
+      },
+      orderBy: { orderDate: 'desc' } // Najnowsze na górze
+    });
+    res.json(orders);
+  } catch (error) {
+    console.error("Fetch orders error:", error);
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
 });
 
 // --- ADMIN: ZMIEŃ STATUS ZAMÓWIENIA ---
 app.patch('/api/admin/orders/:id/status', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
-    const { id } = req.params;
-    const { status } = req.body; // np. "SHIPPED", "DELIVERED"
+  const { id } = req.params;
+  const { status } = req.body; // np. "SHIPPED", "DELIVERED"
 
-    try {
-        const updatedOrder = await prisma.order.update({
-            where: { id: Number(id) },
-            data: { status }
-        });
-        res.json(updatedOrder);
-    } catch (error) {
-        console.error("Update status error:", error);
-        res.status(500).json({ error: "Failed to update order status" });
+  try {
+    const updatedOrder = await prisma.order.update({
+      where: { id: Number(id) },
+      data: { status }
+    });
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error("Update status error:", error);
+    res.status(500).json({ error: "Failed to update order status" });
+  }
+});
+
+// server/src/index.ts
+
+// --- ADMIN: POBIERZ WSZYSTKICH UŻYTKOWNIKÓW ---
+app.get('/api/admin/users', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        createdAt: true,
+        _count: {
+          select: { orders: true } // Policz zamówienia każdego usera
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(users);
+  } catch (error) {
+    console.error("Fetch users error:", error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// --- ADMIN: USUŃ UŻYTKOWNIKA ---
+app.delete('/api/admin/users/:id', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  const { id } = req.params;
+  const userIdToDelete = Number(id);
+  const currentUserId = req.user.userId;
+
+  // Zabezpieczenie: Nie usuwaj samego siebie
+  if (userIdToDelete === currentUserId) {
+    return res.status(400).json({ error: "You cannot delete your own admin account." });
+  }
+
+  try {
+    // Sprawdź czy user ma zamówienia
+    const userOrders = await prisma.order.count({ where: { userId: userIdToDelete } });
+    if (userOrders > 0) {
+      return res.status(400).json({ error: "Cannot delete user with existing orders. Database integrity protection." });
     }
+
+    await prisma.user.delete({
+      where: { id: userIdToDelete }
+    });
+
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
 });
 
 // -- DEBUG ENDPOINTS --
