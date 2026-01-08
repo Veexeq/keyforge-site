@@ -45,3 +45,72 @@ export interface Product {
   isNew: boolean;
   variants: ProductVariant[];
 }
+
+export interface Address {
+  id: number;
+  city: string;
+  street: string;
+  postalCode: string;
+  houseNumber: string;
+  country: string;
+  isDefault: boolean;
+}
+
+export interface OrderItem {
+  id: number;
+  quantity: number;
+  unitPrice: string;
+  variant: {
+    name: string;
+  };
+}
+
+export interface Order {
+  id: number;
+  orderDate: string;
+  status: string;
+  totalAmount: string;
+  items: OrderItem[];
+}
+
+export interface UserProfile {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  createdAt: string;
+  addresses: Address[];
+  orders: Order[];
+}
+
+export interface AdminProduct {
+  id: number;
+  name: string;
+  basePrice: string;
+  discountPrice: string;
+  category: {
+    name: string;
+  };
+  totalStock: number;
+  status: 'ACTIVE' | 'ARCHIVED';
+  boughtCount: number;
+  image?: string;
+}
+
+export type ProductStatus = 'ALL' | 'ACTIVE' | 'ARCHIVED';
+export type SortDirection = 'asc' | 'desc';
+export type SortConfig = { key: string; direction: SortDirection };
+
+export interface AdminProductDetails extends AdminProduct {
+    description: string;
+    images: { id: number; url: string }[];
+    variants: {
+        id: number;
+        name: string;
+        priceModifier: string;
+        stockQuantity: number;
+    }[];
+    totalRevenue: number;
+    totalSold: number;
+}

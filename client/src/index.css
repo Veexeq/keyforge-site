@@ -99,10 +99,17 @@
 }
 
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground antialiased; /* Dodano antialiased dla lepszej czcionki */
+  }
+  body[data-scroll-locked] {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   }
 }
