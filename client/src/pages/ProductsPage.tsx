@@ -40,6 +40,13 @@ export default function ProductsPage() {
             image: p.images[0]?.url || 'https://placehold.co/600x400?text=No+Image',
             category: p.category.name,
             isNew: isNew,
+            variants: p.variants.map((v: ApiProduct['variants'][number]) => ({
+              id: v.id,
+              name: v.name,
+              stockQuantity: v.stockQuantity,
+              priceModifier: Number(v.priceModifier),
+              productId: v.productId
+            })),
           };
         });
 
@@ -96,7 +103,6 @@ export default function ProductsPage() {
         result.sort((a, b) => b.name.localeCompare(a.name));
         break;
       case "newest":
-        // Sortowanie po ID (im wyższe tym nowsze) lub po isNew
         result.sort((a, b) => b.id - a.id); 
         break;
     }

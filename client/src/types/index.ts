@@ -26,6 +26,7 @@ export interface ApiProduct {
     name: string;
     priceModifier: string | number;
     stockQuantity: number;
+    productId: number;
   }[];
   // Data is return as a string
   createdAt: string;
