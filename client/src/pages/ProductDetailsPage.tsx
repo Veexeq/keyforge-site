@@ -9,13 +9,14 @@ import ProductGallery from "@/components/product_details/ProductGallery";
 import ProductInfo from "@/components/product_details/ProductInfo";
 import RelatedProducts from "@/components/product_details/RelatedProducts";
 
-import type { Product, ApiProduct } from "@/types";
+import type { Product, ApiProduct, ProductVariant } from "@/types";
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
   const productId = Number(id);
 
   const [product, setProduct] = useState<Product | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -36,7 +37,7 @@ export default function ProductDetailsPage() {
 
         const rawProduct: ApiProduct = await resProduct.json();
 
-        // Mapowanie pojedynczego produktu
+        // Map a single product
         const createdDate = new Date(rawProduct.createdAt);
         const mappedProduct: Product = {
             id: rawProduct.id,
@@ -56,17 +57,23 @@ export default function ProductDetailsPage() {
         };
         
         setProduct(mappedProduct);
+        
+        // Set a product variant 
+        if (mappedProduct.variants.length > 0) {
+          setSelectedVariant(mappedProduct.variants[0]);
+        } else {
+          setSelectedVariant(null);
+        }
 
-        // 2. Pobieramy WSZYSTKIE produkty dla sekcji "Related"
-        // (W dużej aplikacji zrobilibyśmy osobny endpoint /api/products?category=..., ale tu pobierzemy all i przefiltrujemy)
+        // 2. Get all products for the 'related' section
+        // We do not use parametrized requests here, just filter it in the front
         const resAll = await fetch('http://localhost:3000/api/products');
         const rawAll: ApiProduct[] = await resAll.json();
         
         const related = rawAll
-            .filter(p => p.id !== productId) // Usuń obecny produkt
-            .slice(0, 4) // Weź tylko 4
+            .filter(p => p.id !== productId)
+            .slice(0, 4)
             .map(p => ({
-                // Uproszczone mapowanie dla miniaturek
                 id: p.id,
                 name: p.name,
                 description: p.description,
@@ -93,8 +100,15 @@ export default function ProductDetailsPage() {
     }
   }, [productId]);
 
+  const currentPrice = product 
+    ? product.price + (selectedVariant?.priceModifier || 0)
+    : 0;
 
-  // --- RENDER STANU ŁADOWANIA ---
+  const currentDiscountPrice = product?.discountPrice 
+    ? product.discountPrice + (selectedVariant?.priceModifier || 0)
+    : undefined;
+
+  // --- Loading render ---
   if (loading) {
       return (
         <div className="min-h-screen flex flex-col bg-background">
@@ -107,7 +121,7 @@ export default function ProductDetailsPage() {
       );
   }
 
-  // --- RENDER STANU BŁĘDU (404) ---
+  // --- 404 ---
   if (error || !product) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -126,7 +140,7 @@ export default function ProductDetailsPage() {
     );
   }
 
-  // --- RENDER WŁAŚCIWY ---
+  // --- Main render ---
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Navbar />
@@ -145,7 +159,13 @@ export default function ProductDetailsPage() {
         {/* Main Product Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 mb-24 items-start">
           <ProductGallery product={product} />
-          <ProductInfo product={product} />
+          <ProductInfo 
+            product={product} 
+            selectedVariant={selectedVariant}
+            onVariantChange={setSelectedVariant}
+            currentPrice={currentPrice}
+            currentDiscountPrice={currentDiscountPrice}
+          />
         </div>
 
         {/* Bottom Section */}

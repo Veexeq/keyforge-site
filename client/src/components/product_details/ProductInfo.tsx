@@ -1,112 +1,85 @@
-import { useState } from "react";
+import type { Product, ProductVariant } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Check, Minus, Plus, ShieldCheck, ShoppingCart, Truck } from "lucide-react";
-import type { Product } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { ShoppingCart } from "lucide-react";
 
 interface ProductInfoProps {
   product: Product;
+  selectedVariant: ProductVariant | null;
+  onVariantChange: (variant: ProductVariant) => void;
+  currentPrice: number;
+  currentDiscountPrice?: number;
 }
 
-export default function ProductInfo({ product }: ProductInfoProps) {
-  const [quantity, setQuantity] = useState(1);
-
-  // Handlers
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
-  };
-
-  const increaseQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const handleAddToCart = () => {
-    console.log(`Added ${quantity} x ${product.name} to cart.`);
-  };
+export default function ProductInfo({ 
+  product, 
+  selectedVariant, 
+  onVariantChange, 
+  currentPrice, 
+  currentDiscountPrice 
+}: ProductInfoProps) {
 
   return (
-    <div className="flex flex-col justify-center">
-      <div className="mb-2 text-sm font-medium text-primary uppercase tracking-wider">
-        {product.category}
+    <div className="flex flex-col gap-6">
+      {/* 1. Tytuł i Kategoria */}
+      <div>
+        <Badge variant="secondary" className="mb-3">
+          {product.category}
+        </Badge>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          {product.name}
+        </h1>
       </div>
 
-      <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-4 text-balance">
-        {product.name}
-      </h1>
-
-      <div className="text-3xl font-semibold mb-6 text-foreground">
-        {product.price.toFixed(2)} PLN
+      {/* 2. CENA (Dynamiczna) */}
+      <div className="flex items-baseline gap-3">
+        {currentDiscountPrice ? (
+          <>
+            <span className="text-3xl font-bold text-primary">
+              ${currentDiscountPrice.toFixed(2)}
+            </span>
+            <span className="text-lg text-muted-foreground line-through">
+              ${currentPrice.toFixed(2)}
+            </span>
+            <Badge variant="destructive">Sale</Badge>
+          </>
+        ) : (
+          <span className="text-3xl font-bold">
+            ${currentPrice.toFixed(2)}
+          </span>
+        )}
       </div>
 
-      <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+      {/* 3. Opis */}
+      <p className="text-muted-foreground text-lg leading-relaxed">
         {product.description}
       </p>
 
-      <Separator className="mb-8" />
-
-      {/* Actions */}
-      <div className="flex flex-col gap-4 sm:flex-row mb-8">
-        
-        {/* 1. QUANTITY SELECTOR */}
-        <div className="flex items-center justify-between rounded-full border border-border/50 bg-secondary/10 p-1 sm:w-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-12 w-12 rounded-full hover:bg-background"
-            onClick={decreaseQuantity}
-            disabled={quantity <= 1}
-          >
-            <Minus className="h-4 w-4" />
-            <span className="sr-only">Decrease quantity</span>
-          </Button>
-
-          <div className="w-12 text-center text-lg font-semibold tabular-nums">
-            {quantity}
+      {/* 4. WARIANTY (Przyciski) */}
+      {product.variants.length > 0 && (
+        <div className="space-y-3">
+          <span className="text-sm font-medium">Select Option:</span>
+          <div className="flex flex-wrap gap-3">
+            {product.variants.map((variant) => (
+              <Button
+                key={variant.id}
+                variant={selectedVariant?.id === variant.id ? "default" : "outline"}
+                onClick={() => onVariantChange(variant)}
+                className="min-w-[80px]"
+              >
+                {variant.name}
+              </Button>
+            ))}
           </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-12 w-12 rounded-full hover:bg-background"
-            onClick={increaseQuantity}
-          >
-            <Plus className="h-4 w-4" />
-            <span className="sr-only">Increase quantity</span>
-          </Button>
         </div>
+      )}
 
-        {/* 2. ADD TO CART BUTTON */}
-        {/* FIXME: This button is too short in height on mobile */}
-        <Button
-          size="lg"
-          onClick={handleAddToCart}
-          className="
-            flex-1 rounded-full shadow-lg shadow-primary/20
-            h-14 text-lg font-semibold
-            md:h-14 md:text-lg
-          "
-        >
-          <ShoppingCart className="mr-2 h-5 w-5" />
-          Add {quantity > 1 ? `${quantity} items to Cart` : "item to Cart"}
+      {/* 5. Przycisk Dodaj do koszyka */}
+      <div className="pt-4 flex gap-4">
+        <Button size="lg" className="w-full md:w-auto gap-2">
+          <ShoppingCart className="h-5 w-5" />
+          Add to Cart
         </Button>
-      </div>
-
-      {/* Trust Signals */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-3">
-          <Truck className="h-5 w-5 text-primary" />
-          <span>Ships within 24 hours</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <ShieldCheck className="h-5 w-5 text-primary" />
-          <span>2-year warranty</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Check className="h-5 w-5 text-primary" />
-          <span>100% Authentic</span>
-        </div>
       </div>
     </div>
   );
