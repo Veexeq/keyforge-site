@@ -62,7 +62,7 @@ app.get('/api/products/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const product = await prisma.product.findUnique({
-      where: { id: Number(id) },
+      where: { id: Number(id), isDeleted: false },
       include: {
         category: true,
         images: true,
@@ -297,6 +297,57 @@ app.patch('/api/admin/variants/:variantId/stock', authenticateToken, authorizeAd
         res.json(updatedVariant);
     } catch (error) {
         res.status(500).json({ error: "Failed to update stock" });
+    }
+});
+
+app.post('/api/admin/products', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  const { name, description, categoryId, basePrice, imageUrl, variants } = req.body;
+
+  if (!name || !categoryId || !basePrice || !variants || variants.length === 0) {
+    return res.status(400).json({ error: "Missing required fields or variants" });
+  }
+
+  try {
+    const newProduct = await prisma.product.create({
+      data: {
+        name,
+        description: description || "",
+        categoryId: Number(categoryId),
+        basePrice: Number(basePrice),
+        images: imageUrl ? {
+            create: {
+                url: imageUrl,
+                altText: name,
+                displayOrder: 0
+            }
+        } : undefined,
+        variants: {
+            create: variants.map((v: any) => ({
+                name: v.name,
+                stockQuantity: Number(v.stockQuantity),
+                priceModifier: Number(v.priceModifier || 0)
+            }))
+        }
+      },
+      include: {
+        variants: true,
+        images: true
+      }
+    });
+
+    res.status(201).json(newProduct);
+  } catch (error) {
+    console.error("Create product error:", error);
+    res.status(500).json({ error: "Failed to create product" });
+  }
+});
+
+app.get('/api/categories', async (_, res) => {
+    try {
+        const categories = await prisma.category.findMany();
+        res.json(categories);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch categories" });
     }
 });
 
