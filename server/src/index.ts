@@ -529,7 +529,7 @@ app.put('/api/profile/password', authenticateToken, async (req: any, res: any) =
   try {
     // 1. Pobierz użytkownika, aby sprawdzić stare hasło
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    
+
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
@@ -602,6 +602,197 @@ app.delete('/api/profile/addresses/:id', authenticateToken, async (req: any, res
     res.json({ message: "Address deleted successfully." });
   } catch (error) {
     res.status(500).json({ error: "Failed to delete address." });
+  }
+});
+
+// --- SKŁADANIE ZAMÓWIENIA (CHECKOUT) ---
+app.post('/api/orders', async (req: any, res: any) => {
+  // 1. Ręczna weryfikacja tokenu (Soft Authentication)
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  let userId: number | null = null;
+
+  if (token) {
+    try {
+      const verified: any = jwt.verify(token, process.env.JWT_SECRET || "super-secret-key-change-me");
+      userId = verified.userId;
+    } catch (err) {
+      console.log("Invalid token, proceeding as guest");
+    }
+  }
+
+  // 2. Pobieramy dane (teraz też email!)
+  const { items, address, email } = req.body;
+
+  if (!items || items.length === 0) return res.status(400).json({ error: "Cart is empty" });
+  if (!address) return res.status(400).json({ error: "Shipping address is required" });
+  if (!email) return res.status(400).json({ error: "Email is required" }); // Email jest teraz kluczowy
+
+  try {
+    await prisma.$transaction(async (tx: any) => {
+      let totalAmount = 0;
+      const orderItemsData = [];
+
+      // ... (Logika sprawdzania dostępności i variantów - BEZ ZMIAN) ...
+      // Skopiuj pętlę "for (const item of items)" z poprzedniej wersji kodu
+      for (const item of items) {
+        const variant = await tx.productVariant.findUnique({
+          where: { id: item.variantId },
+          include: { product: true }
+        });
+        if (!variant) throw new Error(`Variant ID ${item.variantId} not found`);
+        if (variant.stockQuantity < item.quantity) throw new Error(`Not enough stock for ${variant.product.name}`);
+
+        const basePrice = Number(variant.product.discountPrice || variant.product.basePrice);
+        const modifier = Number(variant.priceModifier);
+        const finalUnitPrice = basePrice + modifier;
+
+        totalAmount += finalUnitPrice * item.quantity;
+
+        orderItemsData.push({
+          variantId: variant.id,
+          quantity: item.quantity,
+          unitPrice: finalUnitPrice
+        });
+
+        await tx.productVariant.update({
+          where: { id: variant.id },
+          data: { stockQuantity: { decrement: item.quantity } }
+        });
+
+        await tx.product.update({
+          where: { id: variant.product.id },
+          data: { boughtCount: { increment: item.quantity } }
+        });
+      }
+      // ... (Koniec pętli) ...
+
+      // 3. Tworzymy zamówienie
+      const order = await tx.order.create({
+        data: {
+          userId: userId, // Może być null (Guest) lub number (User)
+          email: email,   // Zapisujemy email
+          status: 'PENDING',
+          totalAmount,
+          country: address.country || "Poland",
+          city: address.city,
+          street: address.street,
+          postalCode: address.postalCode,
+          houseNumber: address.houseNumber,
+          items: {
+            create: orderItemsData
+          }
+        }
+      });
+
+      return order;
+    });
+
+    res.status(201).json({ message: "Order placed successfully" });
+
+  } catch (error: any) {
+    console.error("Checkout error:", error);
+    if (error.message && (error.message.includes("stock") || error.message.includes("found"))) {
+      return res.status(400).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Failed to place order" });
+  }
+});
+
+app.get('/api/admin/orders', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        user: {
+          select: { id: true, email: true, firstName: true, lastName: true }
+        },
+        items: {
+          include: {
+            variant: {
+              include: { product: true }
+            }
+          }
+        }
+      },
+      orderBy: { orderDate: 'desc' } // Najnowsze na górze
+    });
+    res.json(orders);
+  } catch (error) {
+    console.error("Fetch orders error:", error);
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
+});
+
+// --- ADMIN: ZMIEŃ STATUS ZAMÓWIENIA ---
+app.patch('/api/admin/orders/:id/status', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  const { id } = req.params;
+  const { status } = req.body; // np. "SHIPPED", "DELIVERED"
+
+  try {
+    const updatedOrder = await prisma.order.update({
+      where: { id: Number(id) },
+      data: { status }
+    });
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error("Update status error:", error);
+    res.status(500).json({ error: "Failed to update order status" });
+  }
+});
+
+// server/src/index.ts
+
+// --- ADMIN: POBIERZ WSZYSTKICH UŻYTKOWNIKÓW ---
+app.get('/api/admin/users', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        createdAt: true,
+        _count: {
+          select: { orders: true } // Policz zamówienia każdego usera
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(users);
+  } catch (error) {
+    console.error("Fetch users error:", error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// --- ADMIN: USUŃ UŻYTKOWNIKA ---
+app.delete('/api/admin/users/:id', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  const { id } = req.params;
+  const userIdToDelete = Number(id);
+  const currentUserId = req.user.userId;
+
+  // Zabezpieczenie: Nie usuwaj samego siebie
+  if (userIdToDelete === currentUserId) {
+    return res.status(400).json({ error: "You cannot delete your own admin account." });
+  }
+
+  try {
+    // Sprawdź czy user ma zamówienia
+    const userOrders = await prisma.order.count({ where: { userId: userIdToDelete } });
+    if (userOrders > 0) {
+      return res.status(400).json({ error: "Cannot delete user with existing orders. Database integrity protection." });
+    }
+
+    await prisma.user.delete({
+      where: { id: userIdToDelete }
+    });
+
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    res.status(500).json({ error: "Failed to delete user" });
   }
 });
 
