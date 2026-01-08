@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { User, LogOut, Settings, User as UserIcon } from "lucide-react";
+import { User, LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -61,12 +61,6 @@ export default function UserNav() {
              <Link to="/profile">
                 <User className="mr-2 h-4 w-4" />
                 Profile
-             </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-             <Link to="/settings">
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
              </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>

@@ -485,6 +485,126 @@ app.put('/api/admin/products/:id', authenticateToken, authorizeAdmin, async (req
   }
 });
 
+app.put('/api/profile/details', authenticateToken, async (req: any, res: any) => {
+  const { firstName, lastName } = req.body;
+  const userId = req.user.userId;
+
+  if (!firstName || !lastName) {
+    return res.status(400).json({ error: "First name and last name are required." });
+  }
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { firstName, lastName },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true
+      }
+    });
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ error: "Failed to update profile." });
+  }
+});
+
+// --- ZMIANA HASŁA ---
+app.put('/api/profile/password', authenticateToken, async (req: any, res: any) => {
+  const { currentPassword, newPassword } = req.body;
+  const userId = req.user.userId;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: "Both current and new passwords are required." });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: "New password must be at least 6 characters long." });
+  }
+
+  try {
+    // 1. Pobierz użytkownika, aby sprawdzić stare hasło
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // 2. Sprawdź czy stare hasło jest poprawne
+    const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isValid) {
+      return res.status(400).json({ error: "Incorrect current password." });
+    }
+
+    // 3. Zahaszuj nowe hasło
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    // 4. Zapisz w bazie
+    await prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newPasswordHash }
+    });
+
+    res.json({ message: "Password updated successfully." });
+  } catch (error) {
+    console.error("Password update error:", error);
+    res.status(500).json({ error: "Failed to update password." });
+  }
+});
+
+app.post('/api/profile/addresses', authenticateToken, async (req: any, res: any) => {
+  const { country, city, street, postalCode, houseNumber } = req.body;
+  const userId = req.user.userId;
+
+  if (!city || !street || !postalCode || !houseNumber) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
+  try {
+    const newAddress = await prisma.savedAddress.create({
+      data: {
+        userId,
+        country: country || "Poland",
+        city,
+        street,
+        postalCode,
+        houseNumber
+      }
+    });
+    res.json(newAddress);
+  } catch (error) {
+    console.error("Add address error:", error);
+    res.status(500).json({ error: "Failed to add address." });
+  }
+});
+
+// --- USUWANIE ADRESU ---
+app.delete('/api/profile/addresses/:id', authenticateToken, async (req: any, res: any) => {
+  const { id } = req.params;
+  const userId = req.user.userId;
+
+  try {
+    const result = await prisma.savedAddress.deleteMany({
+      where: {
+        id: Number(id),
+        userId: userId
+      }
+    });
+
+    if (result.count === 0) {
+      return res.status(404).json({ error: "Address not found or access denied." });
+    }
+
+    res.json({ message: "Address deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete address." });
+  }
+});
+
 // -- DEBUG ENDPOINTS --
 app.get('/api/rawdata/accounts', async (_, res) => {
   const accounts = await prisma.user.findMany();
