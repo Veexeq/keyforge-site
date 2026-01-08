@@ -13,6 +13,7 @@ import AdminProductCreatePage from "./pages/AdminProductCreatePage";
 import AdminProductEditPage from "./pages/AdminProductEditPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AdminProductsPage from "./pages/AdminProductsPage";
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/admin/products/:id/edit" element={<AdminProductEditPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/admin/orders" element={<AdminOrdersPage />} />
+        <Route path="/admin/products" element={<AdminProductsPage />} />
       </Routes>
     </>
   );
