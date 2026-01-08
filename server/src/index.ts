@@ -387,6 +387,102 @@ app.delete('/api/admin/products/:id', authenticateToken, authorizeAdmin, async (
   }
 });
 
+app.put('/api/admin/products/:id', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  const { id } = req.params;
+  const { name, description, categoryId, basePrice, imageUrl, variants } = req.body;
+  const productId = Number(id);
+
+  try {
+    await prisma.$transaction(async (tx: any) => {
+      await tx.product.update({
+        where: { id: productId },
+        data: {
+          name,
+          description,
+          categoryId: Number(categoryId),
+          basePrice: Number(basePrice),
+        }
+      });
+
+      if (imageUrl) {
+        const existingImage = await tx.image.findFirst({ where: { productId } });
+        if (existingImage) {
+          await tx.image.update({
+            where: { id: existingImage.id },
+            data: { url: imageUrl }
+          });
+        } else {
+          await tx.image.create({
+            data: {
+              productId,
+              url: imageUrl,
+              altText: name,
+              displayOrder: 0
+            }
+          });
+        }
+      }
+
+      // A. Pobierz obecne warianty z bazy, żeby wiedzieć co usunąć
+      const currentVariants = await tx.productVariant.findMany({ where: { productId } });
+      const currentVariantIds = currentVariants.map((v: any) => v.id);
+
+      // B. Warianty z formularza, które mają ID (czyli istnieją)
+      const incomingVariantIds = variants
+        .filter((v: any) => v.id)
+        .map((v: any) => v.id);
+
+      // C. Wyznaczamy warianty do usunięcia (są w bazie, ale nie ma ich w formularzu)
+      const toDelete = currentVariantIds.filter((id: number) => !incomingVariantIds.includes(id));
+
+      // D. Usuwamy (tylko jeśli nie są kupione - prisma rzuci błąd foreign key, więc warto to obsłużyć, 
+      // ale tutaj dla uproszczenia zakładamy try-catch globalny lub pozwalamy na błąd jeśli są zamówienia)
+      if (toDelete.length > 0) {
+        // Sprawdźmy czy można usunąć (czy nie ma zamówień) - opcjonalne bezpieczne podejście
+        // Tutaj próbujemy usunąć. Jeśli są zamówienia, poleci błąd, co jest bezpiecznym zachowaniem.
+        await tx.productVariant.deleteMany({
+          where: { id: { in: toDelete } }
+        });
+      }
+
+      // E. Upsert (Aktualizuj istniejące, Twórz nowe)
+      for (const v of variants) {
+        if (v.id) {
+          // Aktualizacja
+          await tx.productVariant.update({
+            where: { id: v.id },
+            data: {
+              name: v.name,
+              stockQuantity: Number(v.stockQuantity),
+              priceModifier: Number(v.priceModifier)
+            }
+          });
+        } else {
+          // Tworzenie nowego (bo nie ma ID)
+          await tx.productVariant.create({
+            data: {
+              productId,
+              name: v.name,
+              stockQuantity: Number(v.stockQuantity),
+              priceModifier: Number(v.priceModifier)
+            }
+          });
+        }
+      }
+    });
+
+    res.json({ message: "Product updated successfully" });
+
+  } catch (error) {
+    console.error("Update error:", error);
+    // Jeśli błąd dotyczy usuwania wariantu, który był kupiony:
+    if ((error as any).code === 'P2003') { // Prisma error code for Foreign Key constraint
+      return res.status(400).json({ error: "Cannot remove variant that has been ordered." });
+    }
+    res.status(500).json({ error: "Failed to update product" });
+  }
+});
+
 // -- DEBUG ENDPOINTS --
 app.get('/api/rawdata/accounts', async (_, res) => {
   const accounts = await prisma.user.findMany();
