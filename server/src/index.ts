@@ -30,6 +30,13 @@ const authenticateToken = (req: any, res: any, next: any) => {
   }
 };
 
+const authorizeAdmin = (req: any, res: any, next: any) => {
+  if (req.user.role !== 'ADMIN') {
+    return res.status(403).json({ error: 'Access denied. Admins only.' });
+  }
+  next();
+};
+
 // --- ENDPOINTS ---
 app.get('/api/products', async (_, res) => {
   try {
@@ -161,6 +168,43 @@ app.get('/api/profile', authenticateToken, async (req: any, res: any) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+app.get('/api/admin/products', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const products = await prisma.product.findMany({
+      include: {
+        category: true,
+        // Pobieramy warianty, żeby policzyć stan magazynowy
+        variants: true, 
+        // Pobieramy obrazki, żeby mieć miniaturkę w panelu
+        images: true 
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const adminProducts = products.map((p) => {
+        // Liczymy stan magazynowy
+        const totalStock = p.variants.reduce((acc, v) => acc + v.stockQuantity, 0);
+        
+        return {
+            id: p.id,
+            name: p.name,
+            basePrice: p.basePrice, // Prisma zwraca Decimal, Express zamieni to na string w JSON
+            category: p.category,
+            totalStock,
+            status: p.isDeleted ? 'ARCHIVED' : 'ACTIVE',
+            boughtCount: p.boughtCount, 
+            // Bierzemy pierwszy obrazek lub null
+            image: p.images && p.images.length > 0 ? p.images[0].url : null
+        };
+    });
+
+    res.json(adminProducts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch admin products' });
   }
 });
 

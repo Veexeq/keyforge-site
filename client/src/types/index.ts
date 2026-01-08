@@ -83,3 +83,16 @@ export interface UserProfile {
   addresses: Address[];
   orders: Order[];
 }
+
+export interface AdminProduct {
+  id: number;
+  name: string;
+  basePrice: string;
+  category: {
+    name: string;
+  };
+  totalStock: number;
+  status: 'ACTIVE' | 'ARCHIVED';
+  boughtCount: number;
+  image?: string;
+}

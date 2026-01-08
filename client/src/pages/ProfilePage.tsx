@@ -5,7 +5,7 @@ import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, MapPin, Package, User as UserIcon, LogOut } from "lucide-react";
+import { Loader2, MapPin, Package, User as UserIcon, LogOut, ShieldAlert } from "lucide-react";
 import type { UserProfile } from "@/types";
 
 import AccountTab from "@/components/profile/AccountTab";
@@ -87,7 +87,8 @@ export default function ProfilePage() {
         </div>
 
         <Tabs defaultValue="account" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+          <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-flex"> 
+            
             <TabsTrigger value="account" className="gap-2">
                 <UserIcon className="h-4 w-4 hidden sm:block"/> Account
             </TabsTrigger>
@@ -97,6 +98,13 @@ export default function ProfilePage() {
             <TabsTrigger value="addresses" className="gap-2">
                 <MapPin className="h-4 w-4 hidden sm:block"/> Addresses
             </TabsTrigger>
+
+            {/* --- ADMIN TAB TRIGGER --- */}
+            {profile.role === 'ADMIN' && (
+                <TabsTrigger value="admin" className="gap-2 text-destructive data-[state=active]:text-destructive">
+                    <ShieldAlert className="h-4 w-4 hidden sm:block"/> Admin Panel
+                </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="account">
