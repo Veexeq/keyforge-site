@@ -111,7 +111,7 @@ export default function AdminOrdersPage() {
           <Button variant="ghost" onClick={() => navigate("/profile")}>
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
           </Button>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="text-m md:text-3xl font-bold flex items-center gap-2">
             <Package className="h-8 w-8" /> Manage Orders
           </h1>
         </div>
