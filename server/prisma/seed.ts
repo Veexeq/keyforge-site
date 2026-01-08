@@ -23,7 +23,7 @@ async function main() {
   const saltRounds = 10;
   
   const adminPlainPassword = process.env.ADMIN_PASS || "admin123" ;
-  const clientPlainPassword = process.env.GUESS_PASS || "guest123";
+  const clientPlainPassword = process.env.GUEST_PASS || "guest123";
 
   const adminPasswordHash = await bcrypt.hash(adminPlainPassword, saltRounds);
   const clientPasswordHash = await bcrypt.hash(clientPlainPassword, saltRounds);
