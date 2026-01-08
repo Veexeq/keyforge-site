@@ -221,6 +221,85 @@ app.patch('/api/admin/products/:id/status', authenticateToken, authorizeAdmin, a
   }
 });
 
+// --- SZCZEGÓŁY PRODUKTU I STATYSTYKI ---
+app.get('/api/admin/products/:id/details', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  const { id } = req.params;
+
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: Number(id) },
+      include: {
+        category: true,
+        images: true,
+        variants: {
+          include: {
+            // Pobieramy historię zamówień dla każdego wariantu, żeby policzyć statystyki
+            orderItems: true 
+          }
+        }
+      }
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // --- OBLICZANIE STATYSTYK ---
+    let totalRevenue = 0;
+    let totalSold = 0;
+    let totalStock = 0;
+
+    product.variants.forEach((variant: any) => {
+      // Magazyn
+      totalStock += variant.stockQuantity;
+
+      // Sprzedaż i Przychód z orderItems
+      variant.orderItems.forEach((item: any) => {
+        totalSold += item.quantity;
+        // unitPrice jest typu Decimal, więc traktujemy jak liczbę lub string
+        totalRevenue += Number(item.unitPrice) * item.quantity;
+      });
+    });
+
+    // Przygotowujemy czysty obiekt odpowiedzi
+    const responseData = {
+      ...product,
+      totalRevenue, // Np. 1500.50
+      totalSold,    // Np. 45
+      totalStock,   // Np. 120
+      // Czyścimy warianty z orderItems, bo frontend tego nie potrzebuje wprost
+      variants: product.variants.map((v: any) => ({
+        id: v.id,
+        name: v.name,
+        priceModifier: v.priceModifier,
+        stockQuantity: v.stockQuantity
+      }))
+    };
+
+    res.json(responseData);
+
+  } catch (error) {
+    console.error("Product details error:", error);
+    res.status(500).json({ error: "Failed to fetch product details" });
+  }
+});
+
+// --- SZYBKA AKTUALIZACJA STANU MAGAZYNOWEGO ---
+app.patch('/api/admin/variants/:variantId/stock', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+    const { variantId } = req.params;
+    const { stockQuantity } = req.body;
+
+    try {
+        const updatedVariant = await prisma.productVariant.update({
+            where: { id: Number(variantId) },
+            data: { stockQuantity: Number(stockQuantity) }
+        });
+        res.json(updatedVariant);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to update stock" });
+    }
+});
+
 // -- DEBUG ENDPOINTS --
 app.get('/api/rawdata/accounts', async (_, res) => {
   const accounts = await prisma.user.findMany();

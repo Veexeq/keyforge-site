@@ -100,3 +100,16 @@ export interface AdminProduct {
 export type ProductStatus = 'ALL' | 'ACTIVE' | 'ARCHIVED';
 export type SortDirection = 'asc' | 'desc';
 export type SortConfig = { key: string; direction: SortDirection };
+
+export interface AdminProductDetails extends AdminProduct {
+    description: string;
+    images: { id: number; url: string }[];
+    variants: {
+        id: number;
+        name: string;
+        priceModifier: string;
+        stockQuantity: number;
+    }[];
+    totalRevenue: number;
+    totalSold: number;
+}

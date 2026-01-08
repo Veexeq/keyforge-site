@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Trash2, Archive, ArrowUpDown } from "lucide-react";
 import type { AdminProduct, SortConfig } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 interface AdminProductsTableProps {
   products: AdminProduct[];
@@ -20,6 +21,8 @@ export default function AdminProductsTable(
     onSort,
     onToggleStatus
   }: AdminProductsTableProps) {
+
+  const navigate = useNavigate();
 
   const renderSortableHead = (label: string, sortKey: keyof AdminProduct | 'category') => (
     <TableHead
@@ -85,7 +88,12 @@ export default function AdminProductsTable(
 
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" title="View Details">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      title="View Details" 
+                      onClick={() => navigate(`/admin/products/${product.id}`)}
+                    >
                       <Eye className="h-4 w-4" />
                     </Button>
                     <Button
