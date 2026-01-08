@@ -5,14 +5,17 @@ import App from './App.tsx'
 import { ThemeProvider } from './components/ThemeProvider.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import { CartProvider } from './context/CartContext.tsx'
+import { AuthProvider } from './context/AuthContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <BrowserRouter>
-        <CartProvider>
-          <App />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,

@@ -70,7 +70,7 @@ export default function RegisterPage() {
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
-            <CardContent className="grid gap-4">
+            <CardContent className="grid gap-4 pb-6">
               {error && <div className="text-sm text-destructive font-medium">{error}</div>}
               
               <div className="grid grid-cols-2 gap-4">
