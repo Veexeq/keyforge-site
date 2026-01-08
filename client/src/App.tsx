@@ -5,6 +5,8 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import GalleryPage from "./pages/GalleryPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ScrollToTop from "./components/shared/ScrollToTop";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 export default function App() {
   return (
@@ -17,6 +19,8 @@ export default function App() {
         <Route path="/products/:id" element={<ProductDetailsPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </>
   );
