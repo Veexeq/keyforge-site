@@ -120,10 +120,6 @@ export default function ProfilePage() {
             <AddressesTab addresses={profile.addresses} />
           </TabsContent>
 
-          <TabsContent value="addresses">
-            <AddressesTab addresses={profile.addresses} />
-          </TabsContent>
-
           {profile.role === 'ADMIN' && (
             <TabsContent value="admin">
               <AdminProductsTab />
