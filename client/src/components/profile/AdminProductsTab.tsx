@@ -152,6 +152,28 @@ export default function AdminProductsTab() {
     </div>
   );
 
+  const handleDeleteProduct = async (productId: number) => {
+    if (!window.confirm("Are you sure? This cannot be undone.")) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/admin/products/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        setProducts(prev => prev.filter(p => p.id !== productId));
+      } else {
+        const err = await res.json();
+        alert(err.error || "Failed to delete");
+      }
+    } catch (error) {
+      console.error("Delete error", error);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
@@ -182,6 +204,7 @@ export default function AdminProductsTab() {
         sortConfig={sortConfig}
         onSort={handleSort}
         onToggleStatus={handleToggleStatus}
+        onDelete={handleDeleteProduct}
       />
 
       <div className="text-xs text-muted-foreground text-right">

@@ -12,6 +12,7 @@ interface AdminProductsTableProps {
   sortConfig: SortConfig | null;
   onSort: (key: keyof AdminProduct | 'category') => void;
   onToggleStatus: (id: number, currentStatus: 'ACTIVE' | 'ARCHIVED') => void;
+  onDelete: (id: number) => void;
 }
 
 export default function AdminProductsTable(
@@ -19,7 +20,8 @@ export default function AdminProductsTable(
     products,
     sortConfig,
     onSort,
-    onToggleStatus
+    onToggleStatus,
+    onDelete
   }: AdminProductsTableProps) {
 
   const navigate = useNavigate();
@@ -107,7 +109,7 @@ export default function AdminProductsTable(
                           : 'text-green-600 hover:text-green-700'
                         }`} />
                     </Button>
-                    <Button variant="ghost" size="icon" title="Delete Permanently">
+                    <Button variant="ghost" size="icon" title="Delete Permanently" onClick={() => onDelete(product.id)}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>

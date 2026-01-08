@@ -50,7 +50,7 @@ app.get('/api/products', async (_, res) => {
         variants: true,
       },
     });
-    
+
     res.json(products);
   } catch (error) {
     console.error(error);
@@ -97,7 +97,7 @@ app.post('/api/register', async (req, res) => {
         passwordHash,
         firstName,
         lastName,
-        role: 'CLIENT', 
+        role: 'CLIENT',
       },
     });
 
@@ -176,25 +176,25 @@ app.get('/api/admin/products', authenticateToken, authorizeAdmin, async (_, res)
     const products = await prisma.product.findMany({
       include: {
         category: true,
-        variants: true, 
-        images: true 
+        variants: true,
+        images: true
       },
       orderBy: { createdAt: 'desc' }
     });
 
     const adminProducts = products.map((p) => {
-        const totalStock = p.variants.reduce((acc, v) => acc + v.stockQuantity, 0);
-        
-        return {
-            id: p.id,
-            name: p.name,
-            basePrice: p.basePrice,
-            category: p.category,
-            totalStock,
-            status: p.isDeleted ? 'ARCHIVED' : 'ACTIVE',
-            boughtCount: p.boughtCount, 
-            image: p.images && p.images.length > 0 ? p.images[0].url : null
-        };
+      const totalStock = p.variants.reduce((acc, v) => acc + v.stockQuantity, 0);
+
+      return {
+        id: p.id,
+        name: p.name,
+        basePrice: p.basePrice,
+        category: p.category,
+        totalStock,
+        status: p.isDeleted ? 'ARCHIVED' : 'ACTIVE',
+        boughtCount: p.boughtCount,
+        image: p.images && p.images.length > 0 ? p.images[0].url : null
+      };
     });
 
     res.json(adminProducts);
@@ -234,7 +234,7 @@ app.get('/api/admin/products/:id/details', authenticateToken, authorizeAdmin, as
         variants: {
           include: {
             // Pobieramy historię zamówień dla każdego wariantu, żeby policzyć statystyki
-            orderItems: true 
+            orderItems: true
           }
         }
       }
@@ -286,18 +286,18 @@ app.get('/api/admin/products/:id/details', authenticateToken, authorizeAdmin, as
 
 // --- SZYBKA AKTUALIZACJA STANU MAGAZYNOWEGO ---
 app.patch('/api/admin/variants/:variantId/stock', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
-    const { variantId } = req.params;
-    const { stockQuantity } = req.body;
+  const { variantId } = req.params;
+  const { stockQuantity } = req.body;
 
-    try {
-        const updatedVariant = await prisma.productVariant.update({
-            where: { id: Number(variantId) },
-            data: { stockQuantity: Number(stockQuantity) }
-        });
-        res.json(updatedVariant);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to update stock" });
-    }
+  try {
+    const updatedVariant = await prisma.productVariant.update({
+      where: { id: Number(variantId) },
+      data: { stockQuantity: Number(stockQuantity) }
+    });
+    res.json(updatedVariant);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update stock" });
+  }
 });
 
 app.post('/api/admin/products', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
@@ -315,18 +315,18 @@ app.post('/api/admin/products', authenticateToken, authorizeAdmin, async (req: a
         categoryId: Number(categoryId),
         basePrice: Number(basePrice),
         images: imageUrl ? {
-            create: {
-                url: imageUrl,
-                altText: name,
-                displayOrder: 0
-            }
+          create: {
+            url: imageUrl,
+            altText: name,
+            displayOrder: 0
+          }
         } : undefined,
         variants: {
-            create: variants.map((v: any) => ({
-                name: v.name,
-                stockQuantity: Number(v.stockQuantity),
-                priceModifier: Number(v.priceModifier || 0)
-            }))
+          create: variants.map((v: any) => ({
+            name: v.name,
+            stockQuantity: Number(v.stockQuantity),
+            priceModifier: Number(v.priceModifier || 0)
+          }))
         }
       },
       include: {
@@ -343,12 +343,48 @@ app.post('/api/admin/products', authenticateToken, authorizeAdmin, async (req: a
 });
 
 app.get('/api/categories', async (_, res) => {
-    try {
-        const categories = await prisma.category.findMany();
-        res.json(categories);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch categories" });
+  try {
+    const categories = await prisma.category.findMany();
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch categories" });
+  }
+});
+
+app.delete('/api/admin/products/:id', authenticateToken, authorizeAdmin, async (req: any, res: any) => {
+  const { id } = req.params;
+  const productId = Number(id);
+
+  try {
+    const variants = await prisma.productVariant.findMany({
+      where: { productId: productId },
+      select: { id: true }
+    });
+    const variantIds = variants.map((v: any) => v.id);
+
+    const orderCount = await prisma.orderItem.count({
+      where: { variantId: { in: variantIds } }
+    });
+
+    if (orderCount > 0) {
+      return res.status(400).json({
+        error: "Cannot delete product that has been bought. Archive it instead."
+      });
     }
+
+    await prisma.$transaction([
+      prisma.image.deleteMany({ where: { productId } }),
+      prisma.productVariant.deleteMany({ where: { productId } }),
+      prisma.review.deleteMany({ where: { productId } }),
+      prisma.product.delete({ where: { id: productId } })
+    ]);
+
+    res.json({ message: "Product deleted successfully" });
+
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({ error: "Failed to delete product" });
+  }
 });
 
 // -- DEBUG ENDPOINTS --
@@ -359,7 +395,7 @@ app.get('/api/rawdata/accounts', async (_, res) => {
   }
 
   return res.status(200).json(accounts);
-}); 
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
