@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 type SortKey = keyof AdminProduct | 'category';
 
-export default function AdminProductsTab() {
+export default function AdminDashboard() {
   const navigate = useNavigate();
 
   const { token } = useAuth();

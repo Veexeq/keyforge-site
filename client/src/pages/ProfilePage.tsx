@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, MapPin, Package, User as UserIcon, LogOut, ShieldAlert } from "lucide-react";
 import type { UserProfile } from "@/types";
 
-import AdminProductsTab from "@/components/profile/AdminDashboard";
+import AdminDashboard from "@/components/profile/AdminDashboard";
 import AccountTab from "@/components/profile/AccountTab";
 import OrdersTab from "@/components/profile/OrdersTab";
 import AddressesTab from "@/components/profile/AddressesTab";
@@ -122,7 +122,7 @@ export default function ProfilePage() {
 
           {profile.role === 'ADMIN' && (
             <TabsContent value="admin">
-              <AdminProductsTab />
+              <AdminDashboard />
             </TabsContent>
           )}
         </Tabs>
