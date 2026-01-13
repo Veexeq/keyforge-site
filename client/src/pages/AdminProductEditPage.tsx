@@ -11,7 +11,7 @@ import { ArrowLeft, Plus, Trash2, Save, Loader2 } from "lucide-react";
 import type { AdminProductDetails } from "@/types";
 
 interface VariantForm {
-  id?: number; // Opcjonalne, bo nowe warianty nie mają ID
+  id?: number;
   name: string;
   stockQuantity: number;
   priceModifier: number;
@@ -23,14 +23,13 @@ interface Category {
 }
 
 export default function AdminProductEditPage() {
-  const { id } = useParams(); // Pobieramy ID z URL
+  const { id } = useParams();
   const { token } = useAuth();
   const navigate = useNavigate();
 
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Dane formularza
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [basePrice, setBasePrice] = useState("");
@@ -41,16 +40,13 @@ export default function AdminProductEditPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [variants, setVariants] = useState<VariantForm[]>([]);
 
-  // 1. Pobierz kategorie ORAZ dane produktu
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Kategorie
         const catRes = await fetch("http://localhost:3000/api/categories");
         const catData = await catRes.json();
         setCategories(catData);
 
-        // Produkt
         const prodRes = await fetch(`http://localhost:3000/api/admin/products/${id}/details`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
@@ -59,7 +55,6 @@ export default function AdminProductEditPage() {
 
         const product = await prodRes.json();
 
-        // Wypełniamy formularz danymi z bazy
         setName(product.name);
         setDescription(product.description || "");
         setBasePrice(product.basePrice);
@@ -70,7 +65,6 @@ export default function AdminProductEditPage() {
           setImageUrl(product.images[0].url);
         }
 
-        // Mapujemy warianty
         setVariants(product.variants.map((v: AdminProductDetails['variants'][number]) => ({
           id: v.id,
           name: v.name,
@@ -90,7 +84,7 @@ export default function AdminProductEditPage() {
     fetchData();
   }, [id, token, navigate]);
 
-  // --- HELPERY DO WARIANTÓW ---
+  // --- HELPERS ---
   const addVariant = () => {
     setVariants([...variants, { name: "", stockQuantity: 0, priceModifier: 0 }]);
   };
@@ -133,7 +127,7 @@ export default function AdminProductEditPage() {
       });
 
       if (res.ok) {
-        navigate("/profile"); // Lub wróć do detali: `/admin/products/${id}`
+        navigate("/profile");
       } else {
         const err = await res.json();
         alert(`Failed to update: ${err.error || "Unknown error"}`);
@@ -160,7 +154,6 @@ export default function AdminProductEditPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Ten sam układ co w CreatePage */}
           <Card>
             <CardHeader><CardTitle>Basic Information</CardTitle></CardHeader>
             <CardContent className="space-y-4">
@@ -217,7 +210,6 @@ export default function AdminProductEditPage() {
                 </div>
               </div>
 
-              {/* Image URL przenieś niżej lub zostaw w osobnym divie */}
               <div className="space-y-2 pt-2">
                 <label className="text-sm font-medium">Image URL</label>
                 <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://..." />

@@ -5,7 +5,7 @@ import { Plus, Loader2, ArrowLeft, PackageSearch } from "lucide-react";
 import type { AdminProduct, ProductStatus, SortConfig } from "@/types";
 import { useNavigate } from "react-router-dom";
 
-import AdminProductsToolbar from "@/components/profile/AdminProductsToolbar"; 
+import AdminProductsToolbar from "@/components/profile/AdminProductsToolbar";
 import AdminProductsTable from "@/components/profile/AdminProductsTable";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
@@ -15,7 +15,7 @@ type SortKey = keyof AdminProduct | 'category';
 export default function AdminProductsPage() {
   const navigate = useNavigate();
   const { token } = useAuth();
-  
+
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -178,54 +178,54 @@ export default function AdminProductsPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
-        <main className="flex-1 container mx-auto px-4 py-8">
-            
-            <div className="flex items-center gap-4 mb-8">
-                <Button variant="ghost" onClick={() => navigate("/profile")}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
-                </Button>
-                <h1 className="text-m md:text-3xl font-bold flex items-center gap-2">
-                    <PackageSearch className="h-8 w-8" /> Manage Products
-                </h1>
-            </div>
+      <Navbar />
+      <main className="flex-1 container mx-auto px-4 py-8">
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <div>
-                    <h2 className="text-xl font-semibold tracking-tight">Product Inventory</h2>
-                    <p className="text-sm text-muted-foreground">Filter, sort, and manage your store items.</p>
-                </div>
+        <div className="flex items-center gap-4 mb-8">
+          <Button variant="ghost" onClick={() => navigate("/profile")}>
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+          </Button>
+          <h1 className="text-m md:text-3xl font-bold flex items-center gap-2">
+            <PackageSearch className="h-8 w-8" /> Manage Products
+          </h1>
+        </div>
 
-                <Button onClick={() => navigate("/admin/products/new")}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Product
-                </Button>
-            </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-xl font-semibold tracking-tight">Product Inventory</h2>
+            <p className="text-sm text-muted-foreground">Filter, sort, and manage your store items.</p>
+          </div>
 
-            {/* Toolbar Component */}
-            <AdminProductsToolbar
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                statusFilter={statusFilter}
-                onStatusChange={setStatusFilter}
-                categoryFilter={categoryFilter}
-                onCategoryChange={setCategoryFilter}
-                categories={uniqueCategories}
-            />
+          <Button onClick={() => navigate("/admin/products/new")}>
+            <Plus className="mr-2 h-4 w-4" /> Add Product
+          </Button>
+        </div>
 
-            {/* Table Component */}
-            <AdminProductsTable
-                products={filteredProducts}
-                sortConfig={sortConfig}
-                onSort={handleSort}
-                onToggleStatus={handleToggleStatus}
-                onDelete={handleDeleteProduct}
-            />
+        {/* Toolbar Component */}
+        <AdminProductsToolbar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          categoryFilter={categoryFilter}
+          onCategoryChange={setCategoryFilter}
+          categories={uniqueCategories}
+        />
 
-            <div className="text-xs text-muted-foreground text-right mt-4">
-                Showing {filteredProducts.length} of {products.length} products
-            </div>
-        </main>
-        <Footer />
+        {/* Table Component */}
+        <AdminProductsTable
+          products={filteredProducts}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+          onToggleStatus={handleToggleStatus}
+          onDelete={handleDeleteProduct}
+        />
+
+        <div className="text-xs text-muted-foreground text-right mt-4">
+          Showing {filteredProducts.length} of {products.length} products
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }

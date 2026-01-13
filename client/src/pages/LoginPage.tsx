@@ -35,11 +35,10 @@ export default function LoginPage() {
       if (!res.ok) throw new Error(data.error || "Login failed");
 
       login(data.token, data.user);
-      navigate("/"); // Przekieruj na stronę główną po sukcesie
+      navigate("/");
     } catch (err: unknown) {
       console.error(err);
       
-      // Sprawdzamy, czy err jest instancją klasy Error
       if (err instanceof Error) {
         setError(err.message);
       } else {

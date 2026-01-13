@@ -3,7 +3,6 @@ import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { Button } from "@/components/ui/button";
-// Upewnij się, że masz Badge zaimportowane!
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
@@ -17,7 +16,6 @@ import {
 import { ArrowLeft, Package, Eye, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// Typy lokalne...
 interface OrderItem {
   id: number;
   quantity: number;
@@ -51,17 +49,14 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // --- HELPER KOLORÓW (TERAZ UŻYWANY) ---
-  // Musisz dopasować te stringi do wariantów, które masz w components/ui/badge.tsx
-  // Zazwyczaj są to: "default", "secondary", "destructive", "outline"
   const getStatusColor = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
-      case "PENDING": return "secondary";   // Szary
-      case "PAID": return "default";        // Czarny/Główny
+      case "PENDING": return "secondary";   
+      case "PAID": return "default";        
       case "PROCESSING": return "default";
-      case "SHIPPED": return "outline";     // Obramowanie
-      case "DELIVERED": return "default";   // Można dodać zieleń w CSS, tu dajmy default
-      case "CANCELLED": return "destructive"; // Czerwony
+      case "SHIPPED": return "outline";     
+      case "DELIVERED": return "default";   
+      case "CANCELLED": return "destructive"; 
       case "REFUNDED": return "destructive";
       default: return "secondary";
     }
@@ -77,7 +72,7 @@ export default function AdminOrdersPage() {
         setLoading(false);
       })
       .catch(err => {
-        console.error(err); // Używamy zmiennej err, żeby linter nie krzyczał
+        console.error(err); 
         setLoading(false);
       });
   }, [token]);
@@ -95,7 +90,7 @@ export default function AdminOrdersPage() {
         body: JSON.stringify({ status: newStatus })
       });
     } catch (error) {
-      console.error(error); // Logujemy błąd
+      console.error(error);
       alert("Failed to update status");
     }
   };
@@ -143,10 +138,8 @@ export default function AdminOrdersPage() {
                   </TableCell>
                   <TableCell>{Number(order.totalAmount).toFixed(2)} PLN</TableCell>
 
-                  {/* --- KOLUMNA STATUSU Z UŻYCIEM HELPERA --- */}
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {/* Badge pokazuje kolor aktualnego statusu */}
                       <Badge variant={getStatusColor(order.status)} className="w-3 h-3 p-0 rounded-full" />
 
                       <Select

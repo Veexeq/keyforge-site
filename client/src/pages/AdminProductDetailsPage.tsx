@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, ArrowLeft, DollarSign, Package, ShoppingCart, Edit } from "lucide-react";
 import type { AdminProductDetails } from "@/types";
-import Navbar from "@/components/shared/Navbar"; // Zakładam, że chcesz mieć Navbar
+import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 
 export default function AdminProductDetailsPage() {
@@ -19,7 +19,6 @@ export default function AdminProductDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [updatingVariant, setUpdatingVariant] = useState<number | null>(null);
 
-  // 1. Pobieranie danych
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -39,7 +38,6 @@ export default function AdminProductDetailsPage() {
     fetchDetails();
   }, [id, token]);
 
-  // 2. Funkcja aktualizacji stanu magazynowego
   const handleUpdateStock = async (variantId: number, newStock: string) => {
     setUpdatingVariant(variantId);
     try {
@@ -53,7 +51,6 @@ export default function AdminProductDetailsPage() {
       });
 
       if (res.ok) {
-        // Aktualizujemy stan lokalnie
         setProduct(prev => prev ? ({
           ...prev,
           variants: prev.variants.map(v =>
@@ -95,7 +92,7 @@ export default function AdminProductDetailsPage() {
           </Button>
         </div>
 
-        {/* KPI CARDS (Statystyki) */}
+        {/* KPI CARDS (Statistics) */}
         <div className="grid gap-4 md:grid-cols-3 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -132,7 +129,7 @@ export default function AdminProductDetailsPage() {
         {/* MAIN CONTENT GRID */}
         <div className="grid gap-8 md:grid-cols-2">
 
-          {/* LEWA KOLUMNA: Info i Obrazki */}
+          {/* LEFT COLUMN*/}
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -156,7 +153,7 @@ export default function AdminProductDetailsPage() {
             </Card>
           </div>
 
-          {/* PRAWA KOLUMNA: Zarządzanie Wariantami (Inventory) */}
+          {/* RIGHT COLUMN */}
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -179,7 +176,6 @@ export default function AdminProductDetailsPage() {
                           <Input
                             type="number"
                             defaultValue={variant.stockQuantity}
-                            // Tutaj prosty trik: update on blur (po wyjściu z pola) lub Enter
                             onBlur={(e) => handleUpdateStock(variant.id, e.target.value)}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {

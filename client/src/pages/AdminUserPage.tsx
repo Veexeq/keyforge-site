@@ -28,7 +28,6 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Pobieranie danych
   useEffect(() => {
     fetch("http://localhost:3000/api/admin/users", {
       headers: { "Authorization": `Bearer ${token}` }
@@ -101,7 +100,6 @@ export default function AdminUsersPage() {
 
                   <TableCell>
                     <div className="font-medium">{u.firstName} {u.lastName}</div>
-                    {/* Oznaczenie "TY" jeśli to obecny użytkownik */}
                     {currentUser?.id === u.id && (
                       <span className="text-[10px] text-primary font-bold">(YOU)</span>
                     )}
