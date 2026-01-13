@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Potrzebujesz shadcn select
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, CreditCard, Truck, User as UserIcon } from "lucide-react";
 import type { Address } from "@/types";
 
@@ -19,7 +19,6 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
 
-  // Formularz
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
   const [street, setStreet] = useState("");
@@ -29,20 +28,16 @@ export default function CheckoutPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  // Zapisane adresy (tylko dla zalogowanych)
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
 
-  // 1. Pobierz adresy i email, jeśli użytkownik jest zalogowany
   useEffect(() => {
     if (isAuthenticated && token) {
-      // Ustawiamy email i nazwę z danych usera
       if (user) {
         setEmail(user.email);
         setFirstName(user.firstName);
         setLastName(user.lastName);
       }
 
-      // Pobieramy adresy z profilu
       fetch("http://localhost:3000/api/profile", {
         headers: { "Authorization": `Bearer ${token}` }
       })
@@ -56,7 +51,6 @@ export default function CheckoutPage() {
     }
   }, [isAuthenticated, token, user]);
 
-  // Funkcja do autouzupełniania po wybraniu adresu z listy
   const handleSelectAddress = (addressId: string) => {
     const selected = savedAddresses.find(addr => addr.id.toString() === addressId);
     if (selected) {
@@ -69,7 +63,7 @@ export default function CheckoutPage() {
   };
 
   if (items.length === 0) {
-    return ( /* ... Widok pustego koszyka bez zmian ... */
+    return (
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
         <main className="flex-1 flex flex-col items-center justify-center p-4">
@@ -96,7 +90,6 @@ export default function CheckoutPage() {
 
     try {
       const headers: Record<string, string> = {"Content-Type": "application/json"};
-      // Dodajemy token TYLKO jeśli użytkownik jest zalogowany
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
@@ -107,13 +100,12 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items: itemsPayload,
           address: addressPayload,
-          email: email // Wysyłamy email
+          email: email
         })
       });
 
       if (res.ok) {
         clearCart();
-        // Jeśli zalogowany -> Profil, Jeśli gość -> Strona główna (lub podziękowanie)
         if (isAuthenticated) {
           navigate("/profile");
         } else {
@@ -141,7 +133,7 @@ export default function CheckoutPage() {
         <div className="grid md:grid-cols-3 gap-8">
           <div className="md:col-span-2 space-y-6">
 
-            {/* SEKCJA ZAPISANYCH ADRESÓW (Tylko dla zalogowanych) */}
+            {/* SAVED ADDRESSES (only for the logged in) */}
             {isAuthenticated && savedAddresses.length > 0 && (
               <Card className="bg-muted/30 border-dashed">
                 <CardHeader className="pb-3">
@@ -175,7 +167,6 @@ export default function CheckoutPage() {
               <CardContent>
                 <form id="checkout-form" onSubmit={handlePlaceOrder} className="grid gap-4">
 
-                  {/* EMAIL (Kluczowy dla gości) */}
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
                     <Input
@@ -229,7 +220,6 @@ export default function CheckoutPage() {
               </CardContent>
             </Card>
 
-            {/* ... Payment Card bez zmian ... */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -246,7 +236,6 @@ export default function CheckoutPage() {
 
           </div>
 
-          {/* ... Prawa kolumna (Summary) bez zmian ... */}
           <div>
             <Card className="sticky top-24">
               <CardHeader>

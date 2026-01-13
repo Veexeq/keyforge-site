@@ -21,18 +21,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // 1. Leniwa inicjalizacja TOKENA
+  
+  // 1. Lazy token init
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem("token");
   });
 
-  // 2. Leniwa inicjalizacja USERA (Naprawa błędu ESLint)
-  // Zamiast useEffect, pobieramy dane startowe tutaj.
+  // 2. Get user
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
 
-    // Przywracamy usera tylko jeśli mamy też token
     if (storedUser && storedToken) {
       try {
         return JSON.parse(storedUser);
@@ -43,10 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     return null;
   });
-
-  // UWAGA: Usunąłem useEffect, który powodował błąd.
-  // Nie jest on potrzebny, bo stan inicjalizujemy powyżej,
-  // a funkcja login() aktualizuje stan i localStorage jednocześnie.
 
   const login = (newToken: string, userData: User) => {
     setToken(newToken);
@@ -65,13 +60,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateUser = (userData: Partial<User>) => {
     if (user) {
-      // 1. Scalamy stare dane z nowymi
       const updatedUser = { ...user, ...userData };
       
-      // 2. Aktualizujemy stan Reacta
       setUser(updatedUser);
 
-      // 3. Aktualizujemy localStorage (żeby po odświeżeniu F5 dane nie zniknęły)
       localStorage.setItem('user', JSON.stringify(updatedUser));
     }
   };

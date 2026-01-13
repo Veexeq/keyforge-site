@@ -24,11 +24,10 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        {/* --- SEKCJA PRODUKTÓW --- */}
+        {/* --- PRODUCTS SECTION --- */}
         <div className="space-y-4">
           <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Inventory</h3>
 
-          {/* Guzik: Dodaj nowy produkt (skrót) */}
           <Button
             onClick={() => navigate("/admin/products/new")}
             variant="outline"
@@ -45,7 +44,6 @@ export default function AdminDashboard() {
             </div>
           </Button>
 
-          {/* Guzik: Lista produktów (TO JEST TEN NOWY) */}
           <Button
             onClick={() => navigate("/admin/products")}
             variant="outline"
@@ -63,7 +61,7 @@ export default function AdminDashboard() {
           </Button>
         </div>
 
-        {/* --- SEKCJA ZAMÓWIEŃ --- */}
+        {/* --- ORDERS SECTION --- */}
         <div className="space-y-4">
           <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Store Management</h3>
 

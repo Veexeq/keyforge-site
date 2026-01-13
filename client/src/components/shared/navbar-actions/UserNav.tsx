@@ -16,7 +16,6 @@ import { useAuth } from "@/context/AuthContext";
 export default function UserNav() {
   const { user, logout, isAuthenticated } = useAuth();
 
-  // 1. Jeśli użytkownik NIE jest zalogowany -> pokaż przycisk Login
   if (!isAuthenticated) {
     return (
       <Button variant="ghost" asChild>
@@ -28,7 +27,6 @@ export default function UserNav() {
     );
   }
 
-  // 2. Jeśli JEST zalogowany -> pokaż Avatar i Dropdown
   const initials = user 
     ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() 
     : "U";
@@ -38,7 +36,6 @@ export default function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
-            {/* Opcjonalnie: jeśli masz avatar w bazie to tutaj source */}
             <AvatarImage src="" alt={user?.firstName} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>

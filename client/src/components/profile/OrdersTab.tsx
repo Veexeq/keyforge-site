@@ -44,7 +44,7 @@ export default function OrdersTab({ orders }: OrdersTabProps) {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {/* Lista przedmiotów w zamówieniu */}
+                    {/* A list of items in an order */}
                     <div className="text-sm space-y-2">
                         {order.items.map((item, idx) => (
                             <div key={idx} className="flex justify-between border-b pb-2 last:border-0 last:pb-0">
@@ -52,14 +52,13 @@ export default function OrdersTab({ orders }: OrdersTabProps) {
                                     <span className="font-medium">{item.quantity}x</span> {item.variant.name}
                                 </span>
                                 <span className="text-muted-foreground">
-                                    {/* Cena w momencie zakupu */}
                                     {Number(item.unitPrice).toFixed(2)} PLN
                                 </span>
                             </div>
                         ))}
                     </div>
                     
-                    {/* Podsumowanie */}
+                    {/* Overview */}
                     <div className="flex justify-between items-center font-bold border-t pt-4">
                         <span>Total Amount</span>
                         <span>{Number(order.totalAmount).toFixed(2)} PLN</span>

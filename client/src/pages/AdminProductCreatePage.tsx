@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Plus, Trash2, Save, Loader2 } from "lucide-react";
 
-// Prosty typ dla wariantu w formularzu
 interface VariantForm {
   name: string;
   stockQuantity: number;
@@ -26,7 +25,6 @@ export default function AdminProductCreatePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Dane formularza
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [basePrice, setBasePrice] = useState("");
@@ -34,15 +32,12 @@ export default function AdminProductCreatePage() {
   const [imageUrl, setImageUrl] = useState("");
   const [discountPrice, setDiscountPrice] = useState("");
 
-  // Lista kategorii do selecta
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Dynamiczna lista wariantów
   const [variants, setVariants] = useState<VariantForm[]>([
     { name: "Default", stockQuantity: 10, priceModifier: 0 }
   ]);
 
-  // 1. Pobierz kategorie przy starcie
   useEffect(() => {
     fetch("http://localhost:3000/api/categories")
       .then(res => res.json())
@@ -50,7 +45,6 @@ export default function AdminProductCreatePage() {
       .catch(err => console.error(err));
   }, []);
 
-  // Helpery do wariantów
   const addVariant = () => {
     setVariants([...variants, { name: "", stockQuantity: 0, priceModifier: 0 }]);
   };
@@ -67,7 +61,6 @@ export default function AdminProductCreatePage() {
     setVariants(newVariants);
   };
 
-  // SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -91,7 +84,6 @@ export default function AdminProductCreatePage() {
       });
 
       if (res.ok) {
-        // Sukces -> wróć do listy produktów
         navigate("/profile");
       } else {
         alert("Failed to create product");
@@ -118,7 +110,7 @@ export default function AdminProductCreatePage() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
 
-          {/* Sekcja 1: Podstawowe info */}
+          {/* Section 1: Basic info */}
           <Card>
             <CardHeader><CardTitle>Basic Information</CardTitle></CardHeader>
             <CardContent className="space-y-4">
@@ -145,7 +137,6 @@ export default function AdminProductCreatePage() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Description</label>
-                {/* Używamy Textarea jeśli masz taki komponent, lub natywnego textarea */}
                 <Textarea
                   className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={description}
@@ -178,7 +169,6 @@ export default function AdminProductCreatePage() {
                 </div>
               </div>
 
-              {/* Image URL przenieś niżej lub zostaw w osobnym divie */}
               <div className="space-y-2 pt-2">
                 <label className="text-sm font-medium">Image URL</label>
                 <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://..." />
@@ -186,7 +176,7 @@ export default function AdminProductCreatePage() {
             </CardContent>
           </Card>
 
-          {/* Sekcja 2: Warianty */}
+          {/* Section 2: Variants */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Variants & Stock</CardTitle>
