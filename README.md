@@ -59,13 +59,9 @@ A secure, role-based panel (`ADMIN` role required) to manage the business.
 
 ## 📸 Gallery
 
-| Landing Page | Admin Dashboard |
-|:---:|:---:|
-| ![Home](https://via.placeholder.com/400x250?text=Storefront) | ![Admin](https://via.placeholder.com/400x250?text=Admin+Panel) |
+The project includes over 50 high-fidelity screens covering the entire user and admin journey.
 
-| Checkout Flow | Order Details |
-|:---:|:---:|
-| ![Checkout](https://via.placeholder.com/400x250?text=Checkout) | ![Modal](https://via.placeholder.com/400x250?text=Order+Modal) |
+### [👉 Click here to view the Full Project Gallery (GALLERY.md)](./GALLERY.md)
 
 ---
 
