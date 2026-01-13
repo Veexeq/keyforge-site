@@ -6,7 +6,7 @@
 
 **KeyForge** is a modern, full-stack e-commerce application. It provides a seamless shopping experience for mechanical keyboard enthusiasts and a robust Content Management System (CMS) for store administrators.
 
-Built with a focus on type safety, performance, and a clean, accessible UI.
+Built with a focus on type safety, performance, and containerization.
 
 ---
 
@@ -18,14 +18,13 @@ Built with a focus on type safety, performance, and a clean, accessible UI.
 ![Vite](https://img.shields.io/badge/Vite-B73C9D?style=for-the-badge&logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Shadcn/UI](https://img.shields.io/badge/Shadcn%2FUI-000000?style=for-the-badge&logo=shadcnui&logoColor=white)
-![Lucide Icons](https://img.shields.io/badge/Lucide-Icons-orange?style=for-the-badge)
 
-### Backend & Database
+### Backend & DevOps
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
 
 ---
 
@@ -72,7 +71,7 @@ A secure, role-based panel (`ADMIN` role required) to manage the business.
 
 ## ⚙️ Local Development Setup
 
-Prerequisites: **Node.js (v18+)** and **PostgreSQL**.
+Prerequisites: **Node.js (v18+)** and **Docker Desktop**.
 
 ### 1. Clone Repository
 ```bash
@@ -80,30 +79,41 @@ git clone [https://github.com/your-username/keyforge.git](https://github.com/you
 cd keyforge
 ```
 
-### 2. Backend Configuration (`/server`)
+### 2. Start the Database (Docker)
+The project includes a `docker-compose.yml` file to spin up the PostgreSQL database automatically.
+
+```bash
+# Start the database container in detached mode
+docker-compose up -d
+```
+*This will start PostgreSQL on port **5433** to avoid conflicts with local installations.*
+
+### 3. Backend Configuration (`/server`)
 
 ```bash
 cd server
 npm install
 ```
 
-Create a `.env` file in the `server` directory:
+Create a `.env` file in the `server` directory.
+**Note:** Ensure the port matches the Docker configuration (`5433`).
+
 ```env
 PORT=3000
 NODE_ENV=development
-# Update with your local PostgreSQL credentials
-DATABASE_URL="postgresql://postgres:password@localhost:5432/keyforge?schema=public"
+# Connecting to Docker container on port 5433
+DATABASE_URL="postgresql://admin:adminpassword@localhost:5433/keyforge?schema=public"
 JWT_SECRET="your-development-secret-key"
 ```
 
-Initialize the database:
+Initialize the database schema:
 ```bash
 npx prisma generate  # Generate Prisma Client
-npx prisma db push   # Sync schema with DB (skips migration history for dev speed)
+npx prisma db push   # Sync schema with the Docker database
 npm run dev          # Start API server on port 3000
 ```
 
-### 3. Frontend Configuration (`/client`)
+### 4. Frontend Configuration (`/client`)
 
 Open a new terminal terminal:
 ```bash
@@ -116,6 +126,8 @@ The application will be available at `http://localhost:5173`.
 ---
 
 ## 🗄️ Database Schema
+
+![Database ER Diagram](https://via.placeholder.com/800x400?text=Place+Your+Database+Schema+Image+Here)
 
 The application uses a relational model optimized for e-commerce:
 * **User:** Handles authentication, roles, and profile data.
