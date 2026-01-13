@@ -14,18 +14,16 @@ interface AccountTabProps {
 export default function AccountTab({ profile }: AccountTabProps) {
   const { token, updateUser } = useAuth();
   
-  // Stan dla Danych Osobowych
   const [firstName, setFirstName] = useState(profile.firstName);
   const [lastName, setLastName] = useState(profile.lastName);
   const [loadingDetails, setLoadingDetails] = useState(false);
 
-  // Stan dla Hasła
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loadingPassword, setLoadingPassword] = useState(false);
 
-  // --- AKTUALIZACJA DANYCH ---
+  // Account-info change
   const handleUpdateDetails = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoadingDetails(true);
@@ -43,8 +41,6 @@ export default function AccountTab({ profile }: AccountTabProps) {
       if (res.ok) {
         updateUser({ firstName, lastName });
         alert("Profile details updated successfully!");
-        // Opcjonalnie: można tu odświeżyć całą stronę lub context, 
-        // ale inputy mają już nowe wartości, więc wizualnie jest ok.
       } else {
         alert("Failed to update profile.");
       }
@@ -55,7 +51,7 @@ export default function AccountTab({ profile }: AccountTabProps) {
     }
   };
 
-  // --- ZMIANA HASŁA ---
+  // Password change
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -85,7 +81,8 @@ export default function AccountTab({ profile }: AccountTabProps) {
 
       if (res.ok) {
         alert("Password changed successfully!");
-        // Czyścimy formularz
+        
+        // Clean the form
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
@@ -103,7 +100,7 @@ export default function AccountTab({ profile }: AccountTabProps) {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
-      {/* FORMULARZ DANYCH OSOBOWYCH */}
+      {/* PERSONAL INFO FORM */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
@@ -151,7 +148,7 @@ export default function AccountTab({ profile }: AccountTabProps) {
         </CardContent>
       </Card>
 
-      {/* FORMULARZ ZMIANY HASŁA */}
+      {/* PASSWORD CHANGE FORM */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">

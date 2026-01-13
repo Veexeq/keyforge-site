@@ -27,7 +27,7 @@ export default function AddressesTab({ addresses: initialAddresses }: AddressesT
   const [houseNumber, setHouseNumber] = useState("");
   const [country, setCountry] = useState("Poland");
 
-  // --- DODAWANIE ADRESU ---
+  // --- ADD ADDRESS ---
   const handleAddAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -44,9 +44,7 @@ export default function AddressesTab({ addresses: initialAddresses }: AddressesT
 
       if (res.ok) {
         const newAddress = await res.json();
-        // Aktualizujemy listę lokalnie
         setAddresses([...addresses, newAddress]);
-        // Resetujemy formularz i zamykamy modal
         setCity(""); setStreet(""); setPostalCode(""); setHouseNumber("");
         setIsDialogOpen(false);
       } else {
@@ -59,7 +57,7 @@ export default function AddressesTab({ addresses: initialAddresses }: AddressesT
     }
   };
 
-  // --- USUWANIE ADRESU ---
+  // --- DELETE ADDRESS ---
   const handleDeleteAddress = async (id: number) => {
     if (!confirm("Are you sure you want to remove this address?")) return;
 
@@ -90,7 +88,6 @@ export default function AddressesTab({ addresses: initialAddresses }: AddressesT
           <p className="text-sm text-muted-foreground">Manage your shipping destinations.</p>
         </div>
 
-        {/* --- MODAL DODAWANIA --- */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -135,7 +132,7 @@ export default function AddressesTab({ addresses: initialAddresses }: AddressesT
         </Dialog>
       </div>
 
-      {/* --- LISTA ADRESÓW --- */}
+      {/* --- ADDRESSES LIST --- */}
       <div className="grid gap-4 md:grid-cols-2">
         {addresses.length > 0 ? (
           addresses.map((addr) => (
@@ -150,7 +147,6 @@ export default function AddressesTab({ addresses: initialAddresses }: AddressesT
                 <p>{addr.street} {addr.houseNumber}</p>
                 <p>{addr.postalCode}</p>
                 
-                {/* Przycisk Usuwania (pojawia się po najechaniu lub zawsze na mobile) */}
                 <Button 
                     variant="ghost" 
                     size="icon" 
