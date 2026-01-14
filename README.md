@@ -1,11 +1,6 @@
 # ⌨️ KeyForge - Artisan Mechanical Keyboard Shop
 
-<p>
-  <img src="./client/src/assets/KeyForge_logo.png" width="32" height="32" style="vertical-align:middle; margin-right: 10px;" />
-  <strong style="vertical-align:middle; font-size: 1.1em;">
-    Crafting unique typing experiences. Artisan keycaps, premium switches, and ergonomic accessories designed in Poland.
-  </strong>
-</p>
+> **Crafting unique typing experiences. Artisan keycaps, premium switches, and ergonomic accessories designed in Poland.**
 
 **KeyForge** is a modern, full-stack e-commerce application. It provides a seamless shopping experience for mechanical keyboard enthusiasts and a robust Content Management System (CMS) for store administrators.
 
