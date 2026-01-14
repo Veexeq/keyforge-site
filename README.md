@@ -133,9 +133,9 @@ The application uses a relational model optimized for e-commerce:
 
 ## 🤝 Author
 
-**Your Name**
+**Wiktor Trybus** 
 * GitHub: [@Veexeq](https://github.com/Veexeq)
 
 ---
 
-*This project was created for educational purposes.*
+*This project was created as a final assignment for the **Introduction to Web Applications** course at the **Faculty of Computer Science, AGH University of Science and Technology**.*
