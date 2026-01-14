@@ -1,8 +1,11 @@
 # ⌨️ KeyForge - Artisan Mechanical Keyboard Shop
 
-![KeyForge Banner](https://via.placeholder.com/1200x300?text=KeyForge+Store+Banner)
-
-> **Crafting unique typing experiences. Artisan keycaps, premium switches, and ergonomic accessories designed in Poland.**
+<p>
+  <img src="./client/src/assets/KeyForge_logo.png" width="32" height="32" style="vertical-align:middle; margin-right: 10px;" />
+  <strong style="vertical-align:middle; font-size: 1.1em;">
+    Crafting unique typing experiences. Artisan keycaps, premium switches, and ergonomic accessories designed in Poland.
+  </strong>
+</p>
 
 **KeyForge** is a modern, full-stack e-commerce application. It provides a seamless shopping experience for mechanical keyboard enthusiasts and a robust Content Management System (CMS) for store administrators.
 
@@ -123,7 +126,7 @@ The application will be available at `http://localhost:5173`.
 
 ## 🗄️ Database Schema
 
-![Database ER Diagram](https://via.placeholder.com/800x400?text=Place+Your+Database+Schema+Image+Here)
+![Database ER Diagram](./client/photos/db_schema.svg)
 
 The application uses a relational model optimized for e-commerce:
 * **User:** Handles authentication, roles, and profile data.
@@ -136,8 +139,7 @@ The application uses a relational model optimized for e-commerce:
 ## 🤝 Author
 
 **Your Name**
-* GitHub: [@YourUsername](https://github.com/)
-* LinkedIn: [Your Profile](https://linkedin.com/)
+* GitHub: [@Veexeq](https://github.com/Veexeq)
 
 ---
 
