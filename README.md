@@ -1,6 +1,6 @@
 # ⌨️ KeyForge - Artisan Mechanical Keyboard Shop
 
-<p align="center">
+<p>
   <img src="./client/src/assets/KeyForge_logo.png" width="32" height="32" style="vertical-align:middle; margin-right: 10px;" />
   <strong style="vertical-align:middle; font-size: 1.1em;">
     Crafting unique typing experiences. Artisan keycaps, premium switches, and ergonomic accessories designed in Poland.
